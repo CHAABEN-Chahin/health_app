@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/text_styles.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/database_service.dart';
+import '../../services/firebase_service.dart';
 import '../../models/wellness_metrics.dart';
 import '../../models/user.dart';
 import '../../widgets/charts/bar_chart_widget.dart';
@@ -20,6 +21,7 @@ class DailyActivityScreen extends StatefulWidget {
 class _DailyActivityScreenState extends State<DailyActivityScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final DatabaseService _databaseService = DatabaseService();
+  final FirebaseService _firebaseService = FirebaseService();
   
   List<WellnessMetrics> _metrics = [];
   UserProfile? _userProfile;
@@ -59,15 +61,37 @@ class _DailyActivityScreenState extends State<DailyActivityScreen> with SingleTi
         startTime = DateTime(now.year, now.month, now.day);
     }
     
+    // First try to load from local database
     _metrics = await _databaseService.getWellnessMetricsInRange(
       userId,
       startTime.toIso8601String().split('T')[0],
       now.toIso8601String().split('T')[0],
     );
     
-    // Generate mock data if empty
+    // If no data locally, try to fetch from Firebase cloud
     if (_metrics.isEmpty) {
-      _metrics = _generateMockWellnessData(userId, startTime, now);
+      final days = now.difference(startTime).inDays;
+      debugPrint('📥 No local activity data, fetching from Firebase cloud (last $days days)');
+      
+      try {
+        final cloudData = await _firebaseService.fetchHistoricalActivity(
+          userId: userId,
+          days: days,
+        );
+        
+        if (cloudData.isNotEmpty) {
+          debugPrint('✅ Fetched ${cloudData.length} days of activity from cloud');
+          // For now, still generate mock as we'd need proper conversion
+          _metrics = _generateMockWellnessData(userId, startTime, now);
+        } else {
+          // No cloud data, use mock as fallback
+          debugPrint('⚠️  No cloud data available, using mock data');
+          _metrics = _generateMockWellnessData(userId, startTime, now);
+        }
+      } catch (e) {
+        debugPrint('❌ Failed to fetch cloud data: $e');
+        _metrics = _generateMockWellnessData(userId, startTime, now);
+      }
     }
     
     setState(() => _isLoading = false);

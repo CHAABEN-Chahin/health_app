@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from schemas.user import UserProfileResponse, UpdateProfileRequest
-from schemas.responses import StandardResponse
-from services.firebase_service import FirebaseService
-from dependencies import get_current_user
+from app.schemas.user import UserProfileResponse, UpdateProfileRequest
+from app.schemas.responses import StandardResponse
+from app.services.firebase_service import FirebaseService
+from app.dependencies import get_current_user
 
 router = APIRouter()
 firebase_service = FirebaseService()

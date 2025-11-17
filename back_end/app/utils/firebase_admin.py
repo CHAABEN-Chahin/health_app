@@ -1,6 +1,6 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
-from config import get_settings
+from app.config import get_settings
 from pathlib import Path
 
 settings = get_settings()

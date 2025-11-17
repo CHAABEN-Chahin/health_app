@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from schemas.vitals import SyncVitalsRequest, GetVitalsResponse
-from schemas.responses import StandardResponse
-from services.firebase_service import FirebaseService
-from dependencies import get_current_user
-from models.vitals import DailyVitals
+from app.schemas.vitals import SyncVitalsRequest, GetVitalsResponse
+from app.schemas.responses import StandardResponse
+from app.services.firebase_service import FirebaseService
+from app.dependencies import get_current_user
+from app.models.vitals import DailyVitals
 from datetime import datetime, timedelta
 
 router = APIRouter()

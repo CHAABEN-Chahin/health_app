@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from config import get_settings
-from utils.firebase_admin import initialize_firebase
-from api.v1 import auth, users, vitals, activities, alerts, sessions, nutrition
+from app.config import get_settings
+from app.utils.firebase_admin import initialize_firebase
+from app.api.v1 import auth, users, vitals, activities, alerts, sessions, nutrition
 import uvicorn
 
 settings = get_settings()

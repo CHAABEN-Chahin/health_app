@@ -1,6 +1,6 @@
 from typing import List, Dict, Optional
 from datetime import datetime
-from utils.firebase_admin import get_firestore_client, initialize_firebase
+from app.utils.firebase_admin import get_firestore_client, initialize_firebase
 
 
 class FirebaseService:

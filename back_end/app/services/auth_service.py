@@ -1,5 +1,5 @@
-from utils.security import SecurityUtils
-from services.firebase_service import FirebaseService
+from app.utils.security import SecurityUtils
+from app.services.firebase_service import FirebaseService
 from datetime import datetime
 from typing import Optional
 

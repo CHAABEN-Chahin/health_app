@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional
-from models.activity import DailyActivity, Session, HourlyActivity
+from app.models.activity import DailyActivity, Session, HourlyActivity
 
 class SyncActivityRequest(BaseModel):
     date: str  # YYYY-MM-DD
