@@ -317,6 +317,7 @@ class AuthService {
       case 'too-many-requests':
         return 'Too many attempts. Please try again later';
       default:
+      print('FirebaseAuthException: ${e.code} - ${e.message}');
         return 'Authentication error: ${e.message}';
     }
   }

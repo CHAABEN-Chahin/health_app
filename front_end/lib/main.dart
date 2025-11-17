@@ -31,16 +31,9 @@ void main() async {
   
   // Initialize Firebase
   try {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: "AIzaSyDUaB9lQ8VvZ9YXr8fO4vXkqEPwDqmQXYo",
-        authDomain: "health-track-app-9e7cf.firebaseapp.com",
-        projectId: "health-track-app-9e7cf",
-        storageBucket: "health-track-app-9e7cf.firebasestorage.app",
-        messagingSenderId: "868588950024",
-        appId: "1:868588950024:web:3e67f5ff5a9f7b9c8f4e2a",
-      ),
-    );
+    await Firebase.initializeApp();
+    print(Firebase.app().options.apiKey);
+
   } catch (e) {
     debugPrint('Failed to initialize Firebase: $e');
   }

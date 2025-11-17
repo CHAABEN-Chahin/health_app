@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:8000/api/v1';
+  static const String baseUrl = 'https://5aeefcb0eff3.ngrok-free.app/api/v1';
   final Dio _dio = Dio();
   final _storage = const FlutterSecureStorage();
   
@@ -96,8 +96,10 @@ class ApiService {
   
   Future<void> updateMyProfile(Map<String, dynamic> profileData) async {
     try {
+      print(profileData);
       await _dio.put('/users/me/profile', data: profileData);
     } on DioException catch (e) {
+      print(e.message);
       throw _handleError(e);
     }
   }

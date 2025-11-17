@@ -308,6 +308,8 @@ class _SetGoalsScreenState extends State<SetGoalsScreen> {
       fitnessGoals: goalText,
     );
 
+    print(success);
+
     setState(() => _isLoading = false);
 
     if (success && mounted) {

@@ -179,6 +179,7 @@ class AuthProvider extends ChangeNotifier {
     String? medications,
     String? fitnessGoals,
   }) async {
+    print(_currentUser);
     if (_currentUser == null) return false;
     
     try {
