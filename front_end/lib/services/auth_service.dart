@@ -50,7 +50,7 @@ class AuthService {
     String? fullName,
   }) async {
     try {
-      // Step 1: Create Firebase user
+      // Step 1: Create Firebase user (Firebase handles password securely)
       final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -65,14 +65,21 @@ class AuthService {
         );
       }
 
-      // Step 2: Get Firebase ID token
+      // Step 2: Get Firebase ID token to authenticate with backend
       final idToken = await _firebaseUser!.getIdToken();
       
-      // Step 3: Register with backend API
+      if (idToken == null) {
+        await _firebaseUser!.delete();
+        return AuthResult(
+          success: false,
+          message: 'Failed to get authentication token',
+        );
+      }
+      
+      // Step 3: Register with backend API (sends ID token, NOT password)
       try {
         final response = await _apiService.signup(
-          email: email,
-          password: password,
+          firebaseIdToken: idToken,
           username: username,
           fullName: fullName ?? username,
         );
@@ -114,7 +121,7 @@ class AuthService {
     required String password,
   }) async {
     try {
-      // Step 1: Login with Firebase (using email)
+      // Step 1: Login with Firebase (Firebase verifies password securely)
       final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
         email: usernameOrEmail,
         password: password,
@@ -129,11 +136,19 @@ class AuthService {
         );
       }
 
-      // Step 2: Get Firebase ID token and login to backend
+      // Step 2: Get Firebase ID token to authenticate with backend
       final idToken = await _firebaseUser!.getIdToken();
       
+      if (idToken == null) {
+        return AuthResult(
+          success: false,
+          message: 'Failed to get authentication token',
+        );
+      }
+      
+      // Step 3: Login to backend (sends ID token, NOT password)
       try {
-        await _apiService.login(usernameOrEmail, password);
+        await _apiService.login(idToken);
         
         _currentUserId = _firebaseUser!.uid;
         
