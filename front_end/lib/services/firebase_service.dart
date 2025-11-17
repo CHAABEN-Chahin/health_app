@@ -51,7 +51,16 @@ class FirebaseService {
       debugPrint('🔄 Syncing vitals for date: $syncDate');
 
       // Get vitals from local database for the specified date
-      final vitals = await _databaseService.getVitalSignsByDate(userId, syncDate);
+      // Calculate start and end timestamps for the date
+      final dateTime = DateTime.parse(syncDate);
+      final startOfDay = DateTime(dateTime.year, dateTime.month, dateTime.day);
+      final endOfDay = startOfDay.add(const Duration(days: 1));
+      
+      final vitals = await _databaseService.getVitalSignsInRange(
+        userId,
+        startOfDay.millisecondsSinceEpoch,
+        endOfDay.millisecondsSinceEpoch,
+      );
       
       if (vitals.isEmpty) {
         debugPrint('⚠️  No vitals to sync for $syncDate');
@@ -98,7 +107,7 @@ class FirebaseService {
       debugPrint('🔄 Syncing activity for date: $syncDate');
 
       // Get wellness metrics from local database
-      final metrics = await _databaseService.getWellnessMetricsByDate(userId, syncDate);
+      final metrics = await _databaseService.getWellnessMetricsForDate(userId, syncDate);
       
       if (metrics == null) {
         debugPrint('⚠️  No activity data to sync for $syncDate');
