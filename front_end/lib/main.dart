@@ -20,6 +20,7 @@ import 'screens/chat/chat_screen.dart';
 import 'services/auth_service.dart';
 import 'services/database_service.dart';
 import 'services/notification_service.dart';
+import 'services/sync_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/vitals_provider.dart';
 import 'providers/bluetooth_provider.dart';
@@ -65,6 +66,14 @@ void main() async {
     await NotificationService().initialize(); // Initialize notifications
   } catch (e) {
     debugPrint('Failed to initialize notifications: $e');
+  }
+  
+  // Initialize background sync service
+  try {
+    await SyncService().initialize(); // Initialize cloud sync
+    debugPrint('✅ SyncService initialized - daily sync scheduled');
+  } catch (e) {
+    debugPrint('⚠️  Failed to initialize SyncService: $e (continuing without cloud sync)');
   }
   
   runApp(const HealthTrackApp());

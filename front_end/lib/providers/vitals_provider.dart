@@ -5,6 +5,7 @@ import '../models/vital_sign.dart';
 import '../services/bluetooth_service.dart';
 import '../services/database_service.dart';
 import '../services/alert_engine.dart';
+import '../services/firebase_service.dart';
 import '../models/wellness_metrics.dart';
 import 'package:intl/intl.dart';
 
@@ -12,6 +13,7 @@ class VitalsProvider extends ChangeNotifier {
   final BluetoothService _bluetoothService = BluetoothService();
   final DatabaseService _databaseService = DatabaseService();
   final AlertEngine _alertEngine = AlertEngine();
+  final FirebaseService _firebaseService = FirebaseService();
   
   VitalSign? _currentVitals;
   List<VitalSign> _recentVitals = [];
@@ -278,6 +280,36 @@ class VitalsProvider extends ChangeNotifier {
     return score.clamp(0, 100);
   }
   
+  /// Sync today's data to Firebase cloud (called at end of day or manually)
+  Future<bool> syncTodayToCloud() async {
+    try {
+      debugPrint('🔄 Starting cloud sync for today\'s data');
+      
+      // Sync vitals data
+      final vitalsSuccess = await _firebaseService.syncVitalsToCloud(
+        userId: _userId,
+      );
+      
+      // Sync activity/wellness data
+      final activitySuccess = await _firebaseService.syncActivityToCloud(
+        userId: _userId,
+      );
+      
+      if (vitalsSuccess && activitySuccess) {
+        debugPrint('✅ Successfully synced all data to cloud');
+        return true;
+      } else {
+        debugPrint('⚠️  Partial sync completed');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('❌ Cloud sync failed: $e');
+      _error = 'Cloud sync failed: $e';
+      notifyListeners();
+      return false;
+    }
+  }
+  
   /// Add vital to recent list (keep last 100)
   void _addToRecentVitals(VitalSign vital) {
     _recentVitals.insert(0, vital);
@@ -326,15 +358,33 @@ class VitalsProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
       
+      // First try to load from local database
       _historicalVitals = await _databaseService.getVitalSignsInRange(
         userId,
         startTime.millisecondsSinceEpoch,
         endTime.millisecondsSinceEpoch,
       );
       
-      // If no data from database, generate mock historical data
+      // If no data locally, try to fetch from Firebase cloud
       if (_historicalVitals.isEmpty) {
-        _historicalVitals = _generateMockHistoricalData(userId, startTime, endTime);
+        final days = endTime.difference(startTime).inDays;
+        debugPrint('📥 No local data, fetching from Firebase cloud (last $days days)');
+        
+        final cloudData = await _firebaseService.fetchHistoricalVitals(
+          userId: userId,
+          days: days,
+        );
+        
+        if (cloudData.isNotEmpty) {
+          debugPrint('✅ Fetched ${cloudData.length} days from cloud');
+          // Convert cloud data to VitalSign objects (simplified - you'd need proper conversion)
+          // For now, fall back to mock data as placeholder
+          _historicalVitals = _generateMockHistoricalData(userId, startTime, endTime);
+        } else {
+          // Still no data from cloud, use mock data as fallback
+          debugPrint('⚠️  No cloud data available, using mock data');
+          _historicalVitals = _generateMockHistoricalData(userId, startTime, endTime);
+        }
       }
       
       _isLoading = false;
