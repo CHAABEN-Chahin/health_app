@@ -353,7 +353,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
-              final success = await authProvider.deleteAccount();
+              final success = await authProvider.deleteAccount('');
               if (success && mounted) {
                 Navigator.pushReplacementNamed(context, '/login');
               }

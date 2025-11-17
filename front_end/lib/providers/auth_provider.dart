@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
-import '../services/database_service.dart';
+import '../services/api_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
-  final DatabaseService _databaseService = DatabaseService();
+  final ApiService _apiService = ApiService();
   
   User? _currentUser;
   UserProfile? _userProfile;
@@ -33,10 +33,14 @@ class AuthProvider extends ChangeNotifier {
       
       final isLoggedIn = await _authService.initialize();
       if (isLoggedIn) {
-        final userId = _authService.currentUserId;
-        if (userId != null) {
-          await _loadUserData(userId);
-          _isAuthenticated = true;
+        _currentUser = _authService.currentUser;
+        _isAuthenticated = true;
+        
+        // Try to load profile
+        try {
+          await _loadUserProfile();
+        } catch (e) {
+          debugPrint('Profile not loaded: $e');
         }
       }
       
@@ -64,9 +68,17 @@ class AuthProvider extends ChangeNotifier {
         password: password,
       );
       
-      if (result.success && result.userId != null) {
-        await _loadUserData(result.userId!);
+      if (result.success) {
+        _currentUser = result.user;
         _isAuthenticated = true;
+        
+        // Load user profile from API
+        try {
+          await _loadUserProfile();
+        } catch (e) {
+          debugPrint('Profile not loaded: $e');
+        }
+        
         _isLoading = false;
         notifyListeners();
         return true;
@@ -89,6 +101,7 @@ class AuthProvider extends ChangeNotifier {
     required String username,
     required String email,
     required String password,
+    String? fullName,
   }) async {
     try {
       _isLoading = true;
@@ -99,10 +112,13 @@ class AuthProvider extends ChangeNotifier {
         username: username,
         email: email,
         password: password,
+        fullName: fullName,
       );
       
-      if (result.success && result.userId != null) {
-        await _loadUserData(result.userId!);
+      if (result.success) {
+        // Refresh to get current user data
+        await _authService.refreshCurrentUser();
+        _currentUser = _authService.currentUser;
         _isAuthenticated = true;
         _isLoading = false;
         notifyListeners();
@@ -121,10 +137,15 @@ class AuthProvider extends ChangeNotifier {
     }
   }
   
-  /// Load user data from database
-  Future<void> _loadUserData(String userId) async {
-    _currentUser = await _databaseService.getUserById(userId);
-    _userProfile = await _databaseService.getUserProfile(userId);
+  /// Load user profile from API
+  Future<void> _loadUserProfile() async {
+    try {
+      final profile = await _apiService.getMyProfile();
+      _userProfile = UserProfile.fromMap(profile);
+    } catch (e) {
+      debugPrint('Failed to load profile: $e');
+      rethrow;
+    }
   }
   
   /// Update user profile
@@ -134,19 +155,11 @@ class AuthProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
       
-      final success = await _databaseService.updateUserProfile(profile);
-      
-      if (success > 0) {
-        _userProfile = profile;
-        _isLoading = false;
-        notifyListeners();
-        return true;
-      } else {
-        _error = 'Failed to update profile';
-        _isLoading = false;
-        notifyListeners();
-        return false;
-      }
+      await _apiService.updateMyProfile(profile.toMap());
+      _userProfile = profile;
+      _isLoading = false;
+      notifyListeners();
+      return true;
     } catch (e) {
       _error = 'Update failed: $e';
       _isLoading = false;
@@ -186,7 +199,7 @@ class AuthProvider extends ChangeNotifier {
         updatedAt: DateTime.now().millisecondsSinceEpoch,
       );
       
-      await _databaseService.updateUserProfile(profile);
+      await _apiService.updateMyProfile(profile.toMap());
       
       _userProfile = profile;
       _isLoading = false;
@@ -251,7 +264,7 @@ class AuthProvider extends ChangeNotifier {
   }
   
   /// Delete account
-  Future<bool> deleteAccount() async {
+  Future<bool> deleteAccount(String password) async {
     if (_currentUser == null) return false;
     
     try {
@@ -259,7 +272,7 @@ class AuthProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
       
-      final result = await _authService.deleteAccount(_currentUser!.id!);
+      final result = await _authService.deleteAccount(password);
       
       if (result.success) {
         _currentUser = null;

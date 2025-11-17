@@ -60,7 +60,7 @@ class AuthService:
             raise ValueError("Invalid credentials")
         
         # Update last login
-        await self.firebase_service.update_user({'last_login': datetime.utcnow().isoformat()}, user['id'])
+        await self.firebase_service.update_user(user['id'], {'last_login': datetime.utcnow().isoformat()})
         
         return {
             'user_id': user['id'],
