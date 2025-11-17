@@ -1,6 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from services.auth_service import AuthService
+from app.services.auth_service import AuthService
 
 security = HTTPBearer()
 auth_service = AuthService()

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, status
-from schemas.auth import SignupRequest, LoginRequest, TokenResponse
-from schemas.responses import StandardResponse, ErrorResponse
-from services.auth_service import AuthService
-from utils.validators import Validators
+from app.schemas.auth import SignupRequest, LoginRequest, TokenResponse
+from app.schemas.responses import StandardResponse, ErrorResponse
+from app.services.auth_service import AuthService
+from app.utils.validators import Validators
 
 router = APIRouter()
 auth_service = AuthService()
