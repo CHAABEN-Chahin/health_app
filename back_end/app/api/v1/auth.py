@@ -11,29 +11,29 @@ validators = Validators()
 @router.post("/signup", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 async def signup(request: SignupRequest):
     """
-    Register a new user account
+    Register a new user account using Firebase Authentication
     
-    Creates user in Firebase and generates JWT token
+    Flow:
+    1. Frontend authenticates with Firebase Auth (email/password)
+    2. Frontend gets Firebase ID token
+    3. Frontend sends ID token to this endpoint
+    4. Backend verifies token and creates user record (NO password stored)
+    5. Backend returns JWT for API authorization
+    
+    Args:
+        firebase_id_token: ID token from Firebase Auth
+        username: Desired username
+        full_name: User's full name
     """
     try:
-        # Validate email
-        if not validators.validate_email(request.email):
-            raise HTTPException(status_code=400, detail="Invalid email format")
-        
-        # Validate password
-        is_valid, error_msg = validators.validate_password(request.password)
-        if not is_valid:
-            raise HTTPException(status_code=400, detail=error_msg)
-        
-        # Create user
+        # Create user using Firebase token
         user_data = await auth_service.signup(
-            email=request.email,
-            password=request.password,
+            firebase_id_token=request.firebase_id_token,
             username=request.username,
             full_name=request.full_name
         )
         
-        # Generate token
+        # Generate backend JWT token for API authorization
         token = auth_service.create_token(user_data)
         
         return TokenResponse(
@@ -53,22 +53,30 @@ async def signup(request: SignupRequest):
 @router.post("/login", response_model=TokenResponse)
 async def login(request: LoginRequest):
     """
-    Authenticate user and return JWT token
+    Authenticate user and return JWT token using Firebase Authentication
+    
+    Flow:
+    1. Frontend authenticates with Firebase Auth (email/password)
+    2. Frontend gets Firebase ID token
+    3. Frontend sends ID token to this endpoint
+    4. Backend verifies token and finds user
+    5. Backend returns JWT for API authorization
     
     Flutter app should:
-    1. Call this endpoint with email/password
-    2. Store the access_token securely
-    3. Call GET /users/me/profile to fetch user data
-    4. Store profile in local SQLite
+    1. Call Firebase Auth to login
+    2. Get ID token from Firebase
+    3. Call this endpoint with the ID token
+    4. Store the returned access_token securely
+    5. Call GET /users/me/profile to fetch user data
+    6. Store profile in local SQLite
     """
     try:
-        # Authenticate user
+        # Authenticate user using Firebase token
         user_data = await auth_service.login(
-            email=request.email,
-            password=request.password
+            firebase_id_token=request.firebase_id_token
         )
         
-        # Generate token
+        # Generate backend JWT token for API authorization
         token = auth_service.create_token(user_data)
         
         return TokenResponse(
@@ -82,7 +90,7 @@ async def login(request: LoginRequest):
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password"
+            detail=str(e)
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")

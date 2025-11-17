@@ -1,7 +1,8 @@
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, firestore, auth
 from app.config import get_settings
 from pathlib import Path
+from typing import Optional, Dict
 
 settings = get_settings()
 
@@ -70,3 +71,27 @@ def initialize_firebase():
 def get_firestore_client():
     """Get the Firestore client instance"""
     return _firestore_client
+
+def verify_firebase_token(id_token: str) -> Optional[Dict]:
+    """
+    Verify Firebase ID token and return decoded token with user info
+    
+    Args:
+        id_token: Firebase ID token from client
+        
+    Returns:
+        Dict with user info (uid, email, etc.) or None if invalid
+    """
+    try:
+        # Verify the ID token
+        decoded_token = auth.verify_id_token(id_token)
+        return decoded_token
+    except auth.InvalidIdTokenError:
+        print("❌ Invalid Firebase ID token")
+        return None
+    except auth.ExpiredIdTokenError:
+        print("❌ Firebase ID token has expired")
+        return None
+    except Exception as e:
+        print(f"❌ Error verifying Firebase token: {e}")
+        return None

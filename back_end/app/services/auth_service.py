@@ -1,5 +1,6 @@
 from app.utils.security import SecurityUtils
 from app.services.firebase_service import FirebaseService
+from app.utils.firebase_admin import verify_firebase_token
 from datetime import datetime
 from typing import Optional
 
@@ -8,20 +9,33 @@ class AuthService:
         self.firebase_service = FirebaseService()
         self.security = SecurityUtils()
     
-    async def signup(self, email: str, password: str, username: str, full_name: str) -> dict:
-        """Register a new user"""
-        # Check if user already exists
-        existing_user = await self.firebase_service.get_user_by_email(email)
+    async def signup(self, firebase_id_token: str, username: str, full_name: str) -> dict:
+        """
+        Register a new user using Firebase ID token
+        
+        User must first register with Firebase Auth on the frontend,
+        then provide the ID token here to create backend user record
+        """
+        # Verify Firebase ID token
+        decoded_token = verify_firebase_token(firebase_id_token)
+        if not decoded_token:
+            raise ValueError("Invalid Firebase ID token")
+        
+        firebase_uid = decoded_token.get('uid')
+        email = decoded_token.get('email')
+        
+        if not firebase_uid or not email:
+            raise ValueError("Invalid token data")
+        
+        # Check if user already exists by Firebase UID
+        existing_user = await self.firebase_service.get_user_by_firebase_uid(firebase_uid)
         if existing_user:
-            raise ValueError("Email already registered")
+            raise ValueError("User already registered")
         
-        # Hash password
-        password_hash = self.security.hash_password(password)
-        
-        # Create user
+        # Create user record (NO password stored)
         user_data = {
+            'firebase_uid': firebase_uid,
             'email': email,
-            'password_hash': password_hash,
             'username': username,
             'full_name': full_name,
             'created_at': datetime.utcnow().isoformat()
@@ -48,16 +62,28 @@ class AuthService:
             'username': username
         }
     
-    async def login(self, email: str, password: str) -> dict:
-        """Authenticate user and return user info"""
-        # Get user from Firebase
-        user = await self.firebase_service.get_user_by_email(email)
-        if not user:
-            raise ValueError("Invalid credentials")
+    async def login(self, firebase_id_token: str) -> dict:
+        """
+        Authenticate user using Firebase ID token
         
-        # Verify password
-        if not self.security.verify_password(password, user['password_hash']):
-            raise ValueError("Invalid credentials")
+        User must first login with Firebase Auth on the frontend,
+        then provide the ID token here to get backend JWT
+        """
+        # Verify Firebase ID token
+        decoded_token = verify_firebase_token(firebase_id_token)
+        if not decoded_token:
+            raise ValueError("Invalid Firebase ID token")
+        
+        firebase_uid = decoded_token.get('uid')
+        email = decoded_token.get('email')
+        
+        if not firebase_uid or not email:
+            raise ValueError("Invalid token data")
+        
+        # Get user from backend by Firebase UID
+        user = await self.firebase_service.get_user_by_firebase_uid(firebase_uid)
+        if not user:
+            raise ValueError("User not found. Please complete signup first.")
         
         # Update last login
         await self.firebase_service.update_user(user['id'], {'last_login': datetime.utcnow().isoformat()})
@@ -69,7 +95,7 @@ class AuthService:
         }
     
     def create_token(self, user_data: dict) -> str:
-        """Create JWT access token"""
+        """Create JWT access token for backend API authorization"""
         token_data = {
             'sub': user_data['user_id'],
             'email': user_data['email'],

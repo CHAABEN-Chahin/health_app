@@ -42,6 +42,18 @@ class FirebaseService:
             return data
         return None
     
+    async def get_user_by_firebase_uid(self, firebase_uid: str) -> Optional[dict]:
+        """Get user by Firebase UID"""
+        if self.demo_mode:
+            return None
+        
+        users = self.db.collection('users').where('firebase_uid', '==', firebase_uid).limit(1).stream()
+        for user in users:
+            data = user.to_dict()
+            data['id'] = user.id
+            return data
+        return None
+    
     async def get_user_by_id(self, user_id: str) -> Optional[dict]:
         """Get user by ID"""
         if self.demo_mode:
