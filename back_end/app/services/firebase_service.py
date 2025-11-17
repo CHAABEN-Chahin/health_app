@@ -10,10 +10,18 @@ class FirebaseService:
             self.db = None
             self.demo_mode = True
             print("⚠️  FirebaseService running in DEMO MODE (no Firebase connection)")
+            print("   All data operations will be simulated")
         else:
-            self.db = firestore.client()
-            self.demo_mode = False
-            print("✅ FirebaseService initialized with Firestore")
+            try:
+                self.db = firestore.client()
+                self.demo_mode = False
+                print("✅ FirebaseService connected to Firestore")
+                print("   All read/write operations will sync to cloud")
+            except Exception as e:
+                self.db = None
+                self.demo_mode = True
+                print(f"❌ Failed to connect to Firestore: {e}")
+                print("   Running in DEMO MODE")
     
     # ==================== USER OPERATIONS ====================
     

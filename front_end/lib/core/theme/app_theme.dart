@@ -28,7 +28,7 @@ class AppTheme {
       ),
       
       // Card Theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.secondaryDark,
         elevation: 8,
         shadowColor: AppColors.pinkPrimary.withOpacity(0.15),
@@ -130,7 +130,7 @@ class AppTheme {
       ),
       
       // Dialog Theme
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.secondaryDark,
         elevation: 24,
         shape: RoundedRectangleBorder(

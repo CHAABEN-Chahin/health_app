@@ -1,39 +1,38 @@
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:uuid/uuid.dart';
 import '../models/user.dart';
 import '../core/constants/constants.dart';
-import 'database_service.dart';
+import 'api_service.dart';
 
 class AuthService {
-  final DatabaseService _db = DatabaseService();
+  final firebase.FirebaseAuth _firebaseAuth = firebase.FirebaseAuth.instance;
+  final ApiService _apiService = ApiService();
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
-  final Uuid _uuid = const Uuid();
 
+  firebase.User? _firebaseUser;
   String? _currentUserId;
   User? _currentUser;
 
   User? get currentUser => _currentUser;
   String? get currentUserId => _currentUserId;
-  bool get isAuthenticated => _currentUserId != null;
-
-  // Hash password using SHA-256
-  String _hashPassword(String password) {
-    final bytes = utf8.encode(password);
-    final digest = sha256.convert(bytes);
-    return digest.toString();
-  }
+  bool get isAuthenticated => _firebaseUser != null;
 
   // Initialize auth service - check if user is already logged in
   Future<bool> initialize() async {
     try {
-      final userId = await _secureStorage.read(key: AppConstants.keyUserId);
-      if (userId != null) {
-        final user = await _db.getUserById(userId);
-        if (user != null) {
-          _currentUserId = userId;
-          _currentUser = user;
+      _firebaseUser = _firebaseAuth.currentUser;
+      
+      if (_firebaseUser != null) {
+        _currentUserId = _firebaseUser!.uid;
+        
+        // Try to load user profile from backend
+        try {
+          final profile = await _apiService.getMyProfile();
+          _currentUser = User.fromMap(profile);
+          return true;
+        } catch (e) {
+          print('Failed to load profile: $e');
+          // User might not have completed profile setup yet
           return true;
         }
       }
@@ -43,7 +42,7 @@ class AuthService {
     return false;
   }
 
-  // Register new user
+  // Register new user with Firebase + Backend
   Future<AuthResult> register({
     required String username,
     required String email,
@@ -51,38 +50,55 @@ class AuthService {
     String? fullName,
   }) async {
     try {
-      // Check if username exists
-      final existingUser = await _db.getUserByUsername(username);
-      if (existingUser != null) {
-        return AuthResult(success: false, message: 'Username already taken');
-      }
-
-      // Check if email exists
-      final existingEmail = await _db.getUserByEmail(email);
-      if (existingEmail != null) {
-        return AuthResult(success: false, message: 'Email already registered');
-      }
-
-      // Create new user
-      final userId = _uuid.v4();
-      final passwordHash = _hashPassword(password);
-      final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-
-      final user = User(
-        id: userId,
-        username: username,
+      // Step 1: Create Firebase user
+      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
-        passwordHash: passwordHash,
-        fullName: fullName,
-        createdAt: now,
+        password: password,
       );
-
-      await _db.insertUser(user);
       
+      _firebaseUser = userCredential.user;
+      
+      if (_firebaseUser == null) {
+        return AuthResult(
+          success: false,
+          message: 'Failed to create Firebase account',
+        );
+      }
+
+      // Step 2: Get Firebase ID token
+      final idToken = await _firebaseUser!.getIdToken();
+      
+      // Step 3: Register with backend API
+      try {
+        final response = await _apiService.signup(
+          email: email,
+          password: password,
+          username: username,
+          fullName: fullName ?? username,
+        );
+        
+        _currentUserId = _firebaseUser!.uid;
+        
+        // Update Firebase display name
+        await _firebaseUser!.updateDisplayName(fullName ?? username);
+        
+        return AuthResult(
+          success: true,
+          message: 'Registration successful',
+          userId: _currentUserId,
+        );
+      } catch (e) {
+        // Backend registration failed, delete Firebase user
+        await _firebaseUser!.delete();
+        return AuthResult(
+          success: false,
+          message: 'Backend registration failed: ${e.toString()}',
+        );
+      }
+    } on firebase.FirebaseAuthException catch (e) {
       return AuthResult(
-        success: true,
-        message: 'Registration successful',
-        userId: userId,
+        success: false,
+        message: _getFirebaseErrorMessage(e),
       );
     } catch (e) {
       return AuthResult(
@@ -92,48 +108,59 @@ class AuthService {
     }
   }
 
-  // Login user
+  // Login user with Firebase + Backend
   Future<AuthResult> login({
     required String usernameOrEmail,
     required String password,
   }) async {
     try {
-      // Try to find user by username or email
-      User? user = await _db.getUserByUsername(usernameOrEmail);
-      user ??= await _db.getUserByEmail(usernameOrEmail);
-
-      if (user == null) {
+      // Step 1: Login with Firebase (using email)
+      final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+        email: usernameOrEmail,
+        password: password,
+      );
+      
+      _firebaseUser = userCredential.user;
+      
+      if (_firebaseUser == null) {
         return AuthResult(
           success: false,
-          message: 'User not found',
+          message: 'Login failed',
         );
       }
 
-      // Verify password
-      final passwordHash = _hashPassword(password);
-      if (user.passwordHash != passwordHash) {
+      // Step 2: Get Firebase ID token and login to backend
+      final idToken = await _firebaseUser!.getIdToken();
+      
+      try {
+        await _apiService.login(usernameOrEmail, password);
+        
+        _currentUserId = _firebaseUser!.uid;
+        
+        // Load user profile from backend
+        final profile = await _apiService.getMyProfile();
+        _currentUser = User.fromMap(profile);
+        
+        // Store credentials
+        await _secureStorage.write(key: AppConstants.keyUserId, value: _currentUserId);
+        await _secureStorage.write(key: AppConstants.keyUsername, value: _currentUser?.username ?? '');
+
+        return AuthResult(
+          success: true,
+          message: 'Login successful',
+          userId: _currentUserId,
+          user: _currentUser,
+        );
+      } catch (e) {
         return AuthResult(
           success: false,
-          message: 'Incorrect password',
+          message: 'Backend login failed: ${e.toString()}',
         );
       }
-
-      // Update last login
-      final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      user = user.copyWith(lastLogin: now);
-      await _db.updateUser(user);
-
-      // Store credentials
-      _currentUserId = user.id;
-      _currentUser = user;
-      await _secureStorage.write(key: AppConstants.keyUserId, value: user.id);
-      await _secureStorage.write(key: AppConstants.keyUsername, value: user.username);
-
+    } on firebase.FirebaseAuthException catch (e) {
       return AuthResult(
-        success: true,
-        message: 'Login successful',
-        userId: user.id,
-        user: user,
+        success: false,
+        message: _getFirebaseErrorMessage(e),
       );
     } catch (e) {
       return AuthResult(
@@ -143,12 +170,16 @@ class AuthService {
     }
   }
 
-  // Logout user
+  // Logout user from Firebase + Backend
   Future<void> logout() async {
     try {
+      await _firebaseAuth.signOut();
+      await _apiService.logout();
       await _secureStorage.delete(key: AppConstants.keyUserId);
       await _secureStorage.delete(key: AppConstants.keyUsername);
       await _secureStorage.delete(key: AppConstants.keyAuthToken);
+      
+      _firebaseUser = null;
       _currentUserId = null;
       _currentUser = null;
     } catch (e) {
@@ -156,27 +187,36 @@ class AuthService {
     }
   }
 
-  // Change password
+  // Change password in Firebase
   Future<AuthResult> changePassword({
     required String currentPassword,
     required String newPassword,
   }) async {
-    if (_currentUser == null) {
+    if (_firebaseUser == null) {
       return AuthResult(success: false, message: 'Not authenticated');
     }
 
     try {
-      final currentHash = _hashPassword(currentPassword);
-      if (_currentUser!.passwordHash != currentHash) {
-        return AuthResult(success: false, message: 'Current password is incorrect');
+      // Re-authenticate before changing password
+      final email = _firebaseUser!.email;
+      if (email == null) {
+        return AuthResult(success: false, message: 'Email not found');
       }
 
-      final newHash = _hashPassword(newPassword);
-      final updatedUser = _currentUser!.copyWith(passwordHash: newHash);
-      await _db.updateUser(updatedUser);
-      _currentUser = updatedUser;
+      final credential = firebase.EmailAuthProvider.credential(
+        email: email,
+        password: currentPassword,
+      );
+      
+      await _firebaseUser!.reauthenticateWithCredential(credential);
+      await _firebaseUser!.updatePassword(newPassword);
 
       return AuthResult(success: true, message: 'Password changed successfully');
+    } on firebase.FirebaseAuthException catch (e) {
+      return AuthResult(
+        success: false,
+        message: _getFirebaseErrorMessage(e),
+      );
     } catch (e) {
       return AuthResult(
         success: false,
@@ -185,23 +225,38 @@ class AuthService {
     }
   }
 
-  // Delete account
+  // Delete account from Firebase
   Future<AuthResult> deleteAccount(String password) async {
-    if (_currentUser == null) {
+    if (_firebaseUser == null) {
       return AuthResult(success: false, message: 'Not authenticated');
     }
 
     try {
-      final passwordHash = _hashPassword(password);
-      if (_currentUser!.passwordHash != passwordHash) {
-        return AuthResult(success: false, message: 'Incorrect password');
+      // Re-authenticate before deleting
+      final email = _firebaseUser!.email;
+      if (email == null) {
+        return AuthResult(success: false, message: 'Email not found');
       }
 
-      // Note: CASCADE delete will remove all related data
-      await _db.database.then((db) => db.delete('users', where: 'id = ?', whereArgs: [_currentUser!.id]));
+      final credential = firebase.EmailAuthProvider.credential(
+        email: email,
+        password: password,
+      );
+      
+      await _firebaseUser!.reauthenticateWithCredential(credential);
+      
+      // Delete from Firebase
+      await _firebaseUser!.delete();
+      
+      // Logout to clear all data
       await logout();
 
       return AuthResult(success: true, message: 'Account deleted');
+    } on firebase.FirebaseAuthException catch (e) {
+      return AuthResult(
+        success: false,
+        message: _getFirebaseErrorMessage(e),
+      );
     } catch (e) {
       return AuthResult(
         success: false,
@@ -210,17 +265,59 @@ class AuthService {
     }
   }
 
-  // Get current user profile
+  // Refresh current user profile from backend
   Future<User?> refreshCurrentUser() async {
-    if (_currentUserId == null) return null;
+    if (_firebaseUser == null) return null;
     
     try {
-      final user = await _db.getUserById(_currentUserId!);
-      _currentUser = user;
-      return user;
+      final profile = await _apiService.getMyProfile();
+      _currentUser = User.fromMap(profile);
+      return _currentUser;
     } catch (e) {
       print('Refresh user error: $e');
       return null;
+    }
+  }
+
+  // Send password reset email
+  Future<AuthResult> resetPassword(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+      return AuthResult(
+        success: true,
+        message: 'Password reset email sent',
+      );
+    } on firebase.FirebaseAuthException catch (e) {
+      return AuthResult(
+        success: false,
+        message: _getFirebaseErrorMessage(e),
+      );
+    }
+  }
+
+  // Get Firebase error message
+  String _getFirebaseErrorMessage(firebase.FirebaseAuthException e) {
+    switch (e.code) {
+      case 'email-already-in-use':
+        return 'This email is already registered';
+      case 'invalid-email':
+        return 'Invalid email address';
+      case 'operation-not-allowed':
+        return 'Operation not allowed';
+      case 'weak-password':
+        return 'Password is too weak';
+      case 'user-disabled':
+        return 'This account has been disabled';
+      case 'user-not-found':
+        return 'No account found with this email';
+      case 'wrong-password':
+        return 'Incorrect password';
+      case 'invalid-credential':
+        return 'Invalid credentials';
+      case 'too-many-requests':
+        return 'Too many attempts. Please try again later';
+      default:
+        return 'Authentication error: ${e.message}';
     }
   }
 }

@@ -1,6 +1,7 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'core/theme/app_theme.dart';
 import 'screens/auth/login_screen.dart';
@@ -27,15 +28,44 @@ import 'providers/alerts_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize sqflite for desktop platforms
-  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
+  // Initialize Firebase
+  try {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyDUaB9lQ8VvZ9YXr8fO4vXkqEPwDqmQXYo",
+        authDomain: "health-track-app-9e7cf.firebaseapp.com",
+        projectId: "health-track-app-9e7cf",
+        storageBucket: "health-track-app-9e7cf.firebasestorage.app",
+        messagingSenderId: "868588950024",
+        appId: "1:868588950024:web:3e67f5ff5a9f7b9c8f4e2a",
+      ),
+    );
+  } catch (e) {
+    debugPrint('Failed to initialize Firebase: $e');
+  }
+  
+  // Initialize sqflite for desktop platforms only (not web)
+  if (!kIsWeb) {
+    try {
+      sqfliteFfiInit();
+      databaseFactory = databaseFactoryFfi;
+    } catch (e) {
+      debugPrint('Failed to initialize sqflite_ffi: $e');
+    }
   }
   
   // Initialize services
-  await DatabaseService().database; // Initialize database
-  await NotificationService().initialize(); // Initialize notifications
+  try {
+    await DatabaseService().database; // Initialize database
+  } catch (e) {
+    debugPrint('Failed to initialize database: $e');
+  }
+  
+  try {
+    await NotificationService().initialize(); // Initialize notifications
+  } catch (e) {
+    debugPrint('Failed to initialize notifications: $e');
+  }
   
   runApp(const HealthTrackApp());
 }
