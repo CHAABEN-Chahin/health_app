@@ -1,27 +1,21 @@
-from firebase_admin import firestore
 from typing import List, Dict, Optional
 from datetime import datetime
-import firebase_admin
+from utils.firebase_admin import get_firestore_client, initialize_firebase
+
 
 class FirebaseService:
     def __init__(self):
-        # Check if Firebase is initialized
-        if not firebase_admin._apps:
-            self.db = None
+        # Get Firestore client
+        initialize_firebase()
+        self.db = get_firestore_client()
+        if self.db is None:
             self.demo_mode = True
             print("⚠️  FirebaseService running in DEMO MODE (no Firebase connection)")
             print("   All data operations will be simulated")
         else:
-            try:
-                self.db = firestore.client()
-                self.demo_mode = False
-                print("✅ FirebaseService connected to Firestore")
-                print("   All read/write operations will sync to cloud")
-            except Exception as e:
-                self.db = None
-                self.demo_mode = True
-                print(f"❌ Failed to connect to Firestore: {e}")
-                print("   Running in DEMO MODE")
+            self.demo_mode = False
+            print("✅ FirebaseService connected to Firestore")
+            print("   All read/write operations will sync to cloud")
     
     # ==================== USER OPERATIONS ====================
     

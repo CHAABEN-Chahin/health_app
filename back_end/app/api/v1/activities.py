@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from app.schemas.activity import SyncActivityRequest, GetActivityResponse, CreateSessionRequest, GetSessionsResponse
-from app.schemas.responses import StandardResponse
-from app.services.firebase_service import FirebaseService
-from app.dependencies import get_current_user
-from app.models.activity import DailyActivity, Session
+from schemas.activity import SyncActivityRequest, GetActivityResponse, CreateSessionRequest, GetSessionsResponse
+from schemas.responses import StandardResponse
+from services.firebase_service import FirebaseService
+from dependencies import get_current_user
+from models.activity import DailyActivity, Session
 from datetime import datetime, timedelta
 
 router = APIRouter()

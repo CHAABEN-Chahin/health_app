@@ -1,16 +1,20 @@
 import firebase_admin
-from firebase_admin import credentials
-from app.config import get_settings
-import json
-import os
+from firebase_admin import credentials, firestore
+from config import get_settings
 from pathlib import Path
 
 settings = get_settings()
 
+# Initialize firestore client (will be None if initialization fails)
+_firestore_client = None
+
 def initialize_firebase():
     """Initialize Firebase Admin SDK"""
+    global _firestore_client
+    
     if firebase_admin._apps:
         print("✅ Firebase already initialized")
+        _firestore_client = firestore.client()
         return  # Already initialized
     
     try:
@@ -28,6 +32,7 @@ def initialize_firebase():
                 print(f"📄 Loading Firebase credentials from: {cred_path}")
                 cred = credentials.Certificate(str(cred_path))
                 firebase_admin.initialize_app(cred)
+                _firestore_client = firestore.client()
                 print("✅ Firebase initialized successfully with Firestore access")
                 return
             else:
@@ -48,6 +53,7 @@ def initialize_firebase():
             }
             cred = credentials.Certificate(cred_dict)
             firebase_admin.initialize_app(cred)
+            _firestore_client = firestore.client()
             print("✅ Firebase initialized successfully with Firestore access")
             return
         
@@ -60,3 +66,7 @@ def initialize_firebase():
         print("   App will work in DEMO MODE without cloud sync")
         import traceback
         traceback.print_exc()
+
+def get_firestore_client():
+    """Get the Firestore client instance"""
+    return _firestore_client

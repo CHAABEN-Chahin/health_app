@@ -3,8 +3,8 @@ Test script to verify Firestore read/write operations
 Run this from the back_end directory: python test_firestore.py
 """
 import asyncio
-from app.utils.firebase_admin import initialize_firebase
-from app.services.firebase_service import FirebaseService
+from utils.firebase_admin import initialize_firebase
+from services.firebase_service import FirebaseService
 from datetime import datetime
 
 async def test_firestore_operations():
