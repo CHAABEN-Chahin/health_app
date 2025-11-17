@@ -2,7 +2,6 @@ class User {
   final String id;
   final String username;
   final String email;
-  final String passwordHash;
   final String? fullName;
   final int createdAt;
   final int? lastLogin;
@@ -11,7 +10,6 @@ class User {
     required this.id,
     required this.username,
     required this.email,
-    required this.passwordHash,
     this.fullName,
     required this.createdAt,
     this.lastLogin,
@@ -22,7 +20,6 @@ class User {
       'id': id,
       'username': username,
       'email': email,
-      'password_hash': passwordHash,
       'full_name': fullName,
       'created_at': createdAt,
       'last_login': lastLogin,
@@ -34,7 +31,6 @@ class User {
       id: map['id'],
       username: map['username'],
       email: map['email'],
-      passwordHash: map['password_hash'],
       fullName: map['full_name'],
       createdAt: map['created_at'],
       lastLogin: map['last_login'],
@@ -45,7 +41,6 @@ class User {
     String? id,
     String? username,
     String? email,
-    String? passwordHash,
     String? fullName,
     int? createdAt,
     int? lastLogin,
@@ -54,7 +49,6 @@ class User {
       id: id ?? this.id,
       username: username ?? this.username,
       email: email ?? this.email,
-      passwordHash: passwordHash ?? this.passwordHash,
       fullName: fullName ?? this.fullName,
       createdAt: createdAt ?? this.createdAt,
       lastLogin: lastLogin ?? this.lastLogin,

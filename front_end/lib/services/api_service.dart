@@ -33,15 +33,13 @@ class ApiService {
   // ==================== AUTHENTICATION ====================
   
   Future<Map<String, dynamic>> signup({
-    required String email,
-    required String password,
+    required String firebaseIdToken,
     required String username,
     required String fullName,
   }) async {
     try {
       final response = await _dio.post('/auth/signup', data: {
-        'email': email,
-        'password': password,
+        'firebase_id_token': firebaseIdToken,
         'username': username,
         'full_name': fullName,
       });
@@ -56,11 +54,10 @@ class ApiService {
     }
   }
   
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  Future<Map<String, dynamic>> login(String firebaseIdToken) async {
     try {
       final response = await _dio.post('/auth/login', data: {
-        'email': email,
-        'password': password,
+        'firebase_id_token': firebaseIdToken,
       });
       
       final data = response.data;

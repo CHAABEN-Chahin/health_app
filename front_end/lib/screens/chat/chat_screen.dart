@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/text_styles.dart';
+import '../../models/user.dart';
+import '../../widgets/common/at_mention_text_field.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -14,16 +16,65 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
   bool _isTyping = false;
+  late List<User> _availableUsers;
 
   @override
   void initState() {
     super.initState();
+    // Initialize mock users for mention feature
+    _availableUsers = _getMockUsers();
+    
     // Add welcome message
     _messages.add(ChatMessage(
       text: "Hello! I'm your health assistant. How can I help you today?",
       isUser: false,
       timestamp: DateTime.now(),
     ));
+  }
+  
+  List<User> _getMockUsers() {
+    return [
+      User(
+        id: 'user_1',
+        username: 'dr_smith',
+        email: 'smith@health.com',
+        passwordHash: '',
+        fullName: 'Dr. Sarah Smith',
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+      ),
+      User(
+        id: 'user_2',
+        username: 'coach_mike',
+        email: 'mike@health.com',
+        passwordHash: '',
+        fullName: 'Coach Mike Johnson',
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+      ),
+      User(
+        id: 'user_3',
+        username: 'nutritionist_emma',
+        email: 'emma@health.com',
+        passwordHash: '',
+        fullName: 'Nutritionist Emma Wilson',
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+      ),
+      User(
+        id: 'user_4',
+        username: 'trainer_alex',
+        email: 'alex@health.com',
+        passwordHash: '',
+        fullName: 'Trainer Alex Rodriguez',
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+      ),
+      User(
+        id: 'user_5',
+        username: 'physio_lisa',
+        email: 'lisa@health.com',
+        passwordHash: '',
+        fullName: 'Physiotherapist Lisa Chen',
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+      ),
+    ];
   }
 
   @override
@@ -226,12 +277,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             color: AppColors.purplePrimary.withOpacity(0.3),
                           ),
                   ),
-                  child: Text(
-                    message.text,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: _buildMessageText(message.text),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -358,19 +404,15 @@ class _ChatScreenState extends State<ChatScreen> {
                     color: AppColors.mediumGray.withOpacity(0.3),
                   ),
                 ),
-                child: TextField(
+                child: AtMentionTextField(
                   controller: _messageController,
-                  style: AppTextStyles.bodyMedium,
-                  decoration: InputDecoration(
-                    hintText: 'Type a message...',
-                    hintStyle: AppTextStyles.bodyMedium.copyWith(
-                      color: AppColors.mediumGray,
-                    ),
-                    border: InputBorder.none,
-                  ),
+                  hintText: 'Type a message... (use @ to mention)',
+                  availableUsers: _availableUsers,
                   maxLines: null,
-                  textInputAction: TextInputAction.send,
                   onSubmitted: (_) => _sendMessage(),
+                  onUserMentioned: (user) {
+                    debugPrint('Mentioned user: @${user.username}');
+                  },
                 ),
               ),
             ),
@@ -542,6 +584,57 @@ class _ChatScreenState extends State<ChatScreen> {
     } else {
       return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
     }
+  }
+
+  Widget _buildMessageText(String text) {
+    final List<TextSpan> spans = [];
+    final mentionRegex = RegExp(r'@(\w+)');
+    int lastMatchEnd = 0;
+
+    for (final match in mentionRegex.allMatches(text)) {
+      // Add text before mention
+      if (match.start > lastMatchEnd) {
+        spans.add(TextSpan(
+          text: text.substring(lastMatchEnd, match.start),
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: Colors.white,
+          ),
+        ));
+      }
+
+      // Add mention with special styling
+      spans.add(TextSpan(
+        text: match.group(0),
+        style: AppTextStyles.bodyMedium.copyWith(
+          color: AppColors.pinkPrimary,
+          fontWeight: FontWeight.w600,
+          decoration: TextDecoration.none,
+        ),
+      ));
+
+      lastMatchEnd = match.end;
+    }
+
+    // Add remaining text
+    if (lastMatchEnd < text.length) {
+      spans.add(TextSpan(
+        text: text.substring(lastMatchEnd),
+        style: AppTextStyles.bodyMedium.copyWith(
+          color: Colors.white,
+        ),
+      ));
+    }
+
+    return RichText(
+      text: TextSpan(children: spans.isEmpty 
+        ? [TextSpan(
+            text: text,
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.white,
+            ),
+          )]
+        : spans),
+    );
   }
 }
 

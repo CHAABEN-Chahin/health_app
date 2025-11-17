@@ -2,14 +2,12 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 
 class SignupRequest(BaseModel):
-    email: EmailStr
-    password: str
+    firebase_id_token: str
     username: str
     full_name: str
 
 class LoginRequest(BaseModel):
-    email: EmailStr
-    password: str
+    firebase_id_token: str
 
 class TokenResponse(BaseModel):
     access_token: str
