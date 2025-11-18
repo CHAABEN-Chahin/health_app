@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.jpeg" alt="Wellvia Logo" width="400"/>
+  <img src="logo.jpeg" alt="Wellvia Logo" width="200"/>
 </p>
 
 <h1 align="center">Wellvia: Your GenAI-Powered Health & Nutrition Companion</h1>
@@ -49,7 +49,7 @@ Wellvia is built on a modern, decoupled architecture that ensures scalability, s
 Our vision for Wellvia includes a sleek, minimalist wearable designed to continuously monitor user vitals.
 
 <p align="center">
-  <img src="watch_prototype.jpeg" alt="Watch Prototype" width="500"/>
+  <img src="watch_prototype.jpeg" alt="Watch Prototype" width="200"/>
 </p>
 
 #### Hardware Circuit Diagram
