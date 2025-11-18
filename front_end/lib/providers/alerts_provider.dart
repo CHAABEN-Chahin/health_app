@@ -204,9 +204,7 @@ class AlertsProvider extends ChangeNotifier {
   Future<void> markAllAsRead({int userId = 1}) async {
     try {
       for (var alert in _unreadAlerts) {
-        if (alert.id != null) {
-          await _databaseService.markAlertAsRead(alert.id!);
-        }
+        await _databaseService.markAlertAsRead(alert.id);
       }
       
       // Update local state
@@ -254,9 +252,7 @@ class AlertsProvider extends ChangeNotifier {
     try {
       // Delete all alerts for user
       for (var alert in _allAlerts) {
-        if (alert.id != null) {
-          await _databaseService.deleteAlert(alert.id!);
-        }
+        await _databaseService.deleteAlert(alert.id);
       }
       
       _allAlerts.clear();

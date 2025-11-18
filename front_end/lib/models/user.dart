@@ -1,10 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class User {
   final String id;
   final String username;
   final String email;
   final String? fullName;
-  final int createdAt;
-  final int? lastLogin;
+  final DateTime createdAt;
+  final DateTime? lastLogin;
 
   User({
     required this.id,
@@ -21,20 +23,37 @@ class User {
       'username': username,
       'email': email,
       'full_name': fullName,
-      'created_at': createdAt,
-      'last_login': lastLogin,
+      'created_at': Timestamp.fromDate(createdAt),
+      'last_login': lastLogin != null ? Timestamp.fromDate(lastLogin!) : null,
     };
   }
 
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
-      id: map['id'],
-      username: map['username'],
-      email: map['email'],
-      fullName: map['full_name'],
-      createdAt: map['created_at'],
-      lastLogin: map['last_login'],
+      id: map['id'] as String,
+      username: map['username'] as String,
+      email: map['email'] as String,
+      fullName: map['full_name'] as String?,
+      createdAt: _parseTimestamp(map['created_at']),
+      lastLogin: _parseTimestamp(map['last_login']),
     );
+  }
+
+  /// Helper method to parse various timestamp formats
+  static DateTime _parseTimestamp(dynamic value) {
+    if (value == null) {
+      return DateTime.now();
+    } else if (value is Timestamp) {
+      return value.toDate();
+    } else if (value is int) {
+      // Handle milliseconds since epoch
+      return DateTime.fromMillisecondsSinceEpoch(value);
+    } else if (value is String) {
+      return DateTime.parse(value);
+    } else if (value is DateTime) {
+      return value;
+    }
+    return DateTime.now();
   }
 
   User copyWith({
@@ -42,8 +61,8 @@ class User {
     String? username,
     String? email,
     String? fullName,
-    int? createdAt,
-    int? lastLogin,
+    DateTime? createdAt,
+    DateTime? lastLogin,
   }) {
     return User(
       id: id ?? this.id,
@@ -70,10 +89,10 @@ class UserProfile {
   bool hasHighCholesterol;
   bool hasThyroidDisorder;
   String? otherConditions;
-  String? medicalConditions;  // Added
-  String? allergies;           // Added
-  String? medications;         // Added
-  String? fitnessGoals;        // Added
+  String? medicalConditions;
+  String? allergies;
+  String? medications;
+  String? fitnessGoals;
   String? goalType;
   String? goalIntensity;
   double? targetWeightKg;
@@ -84,7 +103,7 @@ class UserProfile {
   int dailyProteinGoal;
   int dailyCarbsGoal;
   int dailyFatsGoal;
-  int? updatedAt;              // Added
+  DateTime? updatedAt;
 
   UserProfile({
     required this.userId,
@@ -146,41 +165,69 @@ class UserProfile {
       'daily_protein_goal': dailyProteinGoal,
       'daily_carbs_goal': dailyCarbsGoal,
       'daily_fats_goal': dailyFatsGoal,
-      'updated_at': updatedAt,
+      'updated_at': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
     };
   }
 
   factory UserProfile.fromMap(Map<String, dynamic> map) {
     return UserProfile(
-      userId: map['user_id'],
-      age: map['age'],
-      gender: map['gender'],
-      weightKg: map['weight_kg'],
-      heightCm: map['height_cm'],
-      activityLevel: map['activity_level'],
-      hasHypertension: map['has_hypertension'] == 1,
-      hasDiabetes: map['has_diabetes'] == 1,
-      hasHeartCondition: map['has_heart_condition'] == 1,
-      hasAsthma: map['has_asthma'] == 1,
-      hasHighCholesterol: map['has_high_cholesterol'] == 1,
-      hasThyroidDisorder: map['has_thyroid_disorder'] == 1,
-      otherConditions: map['other_conditions'],
-      medicalConditions: map['medical_conditions'],
-      allergies: map['allergies'],
-      medications: map['medications'],
-      fitnessGoals: map['fitness_goals'],
-      goalType: map['goal_type'],
-      goalIntensity: map['goal_intensity'],
-      targetWeightKg: map['target_weight_kg'],
-      dailyCalorieGoal: map['daily_calorie_goal'] ?? 2000,
-      dailyStepGoal: map['daily_step_goal'] ?? 10000,
-      dailyDistanceGoal: map['daily_distance_goal'] ?? 5.0,
-      dailyActiveMinutesGoal: map['daily_active_minutes_goal'] ?? 30,
-      dailyProteinGoal: map['daily_protein_goal'] ?? 150,
-      dailyCarbsGoal: map['daily_carbs_goal'] ?? 250,
-      dailyFatsGoal: map['daily_fats_goal'] ?? 70,
-      updatedAt: map['updated_at'],
+      userId: map['user_id'] as String,
+      age: map['age'] as int?,
+      gender: map['gender'] as String?,
+      weightKg: _parseDouble(map['weight_kg']),
+      heightCm: _parseDouble(map['height_cm']),
+      activityLevel: map['activity_level'] as String?,
+      hasHypertension: _parseBool(map['has_hypertension']),
+      hasDiabetes: _parseBool(map['has_diabetes']),
+      hasHeartCondition: _parseBool(map['has_heart_condition']),
+      hasAsthma: _parseBool(map['has_asthma']),
+      hasHighCholesterol: _parseBool(map['has_high_cholesterol']),
+      hasThyroidDisorder: _parseBool(map['has_thyroid_disorder']),
+      otherConditions: map['other_conditions'] as String?,
+      medicalConditions: map['medical_conditions'] as String?,
+      allergies: map['allergies'] as String?,
+      medications: map['medications'] as String?,
+      fitnessGoals: map['fitness_goals'] as String?,
+      goalType: map['goal_type'] as String?,
+      goalIntensity: map['goal_intensity'] as String?,
+      targetWeightKg: _parseDouble(map['target_weight_kg']),
+      dailyCalorieGoal: map['daily_calorie_goal'] as int? ?? 2000,
+      dailyStepGoal: map['daily_step_goal'] as int? ?? 10000,
+      dailyDistanceGoal: _parseDouble(map['daily_distance_goal']) ?? 5.0,
+      dailyActiveMinutesGoal: map['daily_active_minutes_goal'] as int? ?? 30,
+      dailyProteinGoal: map['daily_protein_goal'] as int? ?? 150,
+      dailyCarbsGoal: map['daily_carbs_goal'] as int? ?? 250,
+      dailyFatsGoal: map['daily_fats_goal'] as int? ?? 70,
+      updatedAt: _parseTimestamp(map['updated_at']),
     );
+  }
+
+  /// Helper method to parse boolean values (handles int 0/1 or bool)
+  static bool _parseBool(dynamic value) {
+    if (value == null) return false;
+    if (value is bool) return value;
+    if (value is int) return value == 1;
+    if (value is String) return value.toLowerCase() == 'true' || value == '1';
+    return false;
+  }
+
+  /// Helper method to parse double values
+  static double? _parseDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
+  }
+
+  /// Helper method to parse timestamp values
+  static DateTime? _parseTimestamp(dynamic value) {
+    if (value == null) return null;
+    if (value is Timestamp) return value.toDate();
+    if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
+    if (value is String) return DateTime.tryParse(value);
+    if (value is DateTime) return value;
+    return null;
   }
 
   UserProfile copyWith({
@@ -211,7 +258,7 @@ class UserProfile {
     int? dailyProteinGoal,
     int? dailyCarbsGoal,
     int? dailyFatsGoal,
-    int? updatedAt,
+    DateTime? updatedAt,
   }) {
     return UserProfile(
       userId: userId ?? this.userId,

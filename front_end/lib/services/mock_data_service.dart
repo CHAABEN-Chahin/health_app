@@ -4,7 +4,6 @@ import 'dart:math';
 class MockDataService {
   final Random _random = Random();
   Timer? _timer;
-  Stream<Map<String, dynamic>>? _dataStream;
   StreamController<Map<String, dynamic>>? _controller;
 
   // Activity states for realistic simulation

@@ -21,6 +21,10 @@ class AuthProvider extends ChangeNotifier {
   String? get error => _error;
   String? get userId => _currentUser?.id;
   
+  // Add these getters for debugging
+  User? get user => _currentUser;
+  String? get token => _authService.currentUser?.id; // Or wherever your token is stored
+  
   AuthProvider() {
     _checkAutoLogin();
   }
@@ -108,6 +112,8 @@ class AuthProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
       
+      debugPrint('📝 Starting registration for: $username');
+      
       final result = await _authService.register(
         username: username,
         email: email,
@@ -116,20 +122,45 @@ class AuthProvider extends ChangeNotifier {
       );
       
       if (result.success) {
-        // Refresh to get current user data
-        await _authService.refreshCurrentUser();
-        _currentUser = _authService.currentUser;
-        _isAuthenticated = true;
-        _isLoading = false;
-        notifyListeners();
-        return true;
+        debugPrint('✅ Registration successful');
+        
+        // CRITICAL FIX: Use the user from registration result directly
+        // instead of refreshing which causes null issues
+        if (result.userId != null) {
+          _currentUser = result.user;
+          _isAuthenticated = true;
+          debugPrint('✅ Current user set from registration result: ${_currentUser!.id}');
+          _isLoading = false;
+          notifyListeners();
+          return true;
+        } else {
+          // Fallback: try to get current user from auth service
+          debugPrint('⚠️ No user in result, checking auth service...');
+          _currentUser = _authService.currentUser;
+          
+          if (_currentUser != null) {
+            debugPrint('✅ Current user found in auth service: ${_currentUser!.id}');
+            _isAuthenticated = true;
+            _isLoading = false;
+            notifyListeners();
+            return true;
+          } else {
+            debugPrint('❌ No user data available after registration');
+            _error = 'Registration succeeded but failed to load user data. Please try logging in.';
+            _isLoading = false;
+            notifyListeners();
+            return false;
+          }
+        }
       } else {
+        debugPrint('❌ Registration failed: ${result.message}');
         _error = result.message;
         _isLoading = false;
         notifyListeners();
         return false;
       }
     } catch (e) {
+      debugPrint('❌ Registration error: $e');
       _error = 'Registration failed: $e';
       _isLoading = false;
       notifyListeners();
@@ -140,13 +171,20 @@ class AuthProvider extends ChangeNotifier {
   /// Load user profile from Firestore
   Future<void> _loadUserProfile() async {
     try {
-      if (_currentUser?.id == null) return;
+      if (_currentUser?.id == null) {
+        debugPrint('⚠️ Cannot load profile: currentUser.id is null');
+        return;
+      }
+      debugPrint('📥 Loading profile for user: ${_currentUser!.id}');
       final profile = await _firestoreService.getUserProfile(_currentUser!.id);
       if (profile != null) {
         _userProfile = UserProfile.fromMap(profile);
+        debugPrint('✅ Profile loaded successfully');
+      } else {
+        debugPrint('ℹ️ No profile found for user');
       }
     } catch (e) {
-      debugPrint('Failed to load profile: $e');
+      debugPrint('❌ Failed to load profile: $e');
       rethrow;
     }
   }
@@ -158,7 +196,14 @@ class AuthProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
       
-      if (_currentUser?.id == null) return false;
+      if (_currentUser?.id == null) {
+        debugPrint('❌ Cannot update profile: currentUser.id is null');
+        _error = 'User not authenticated';
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+      
       await _firestoreService.setUserProfile(_currentUser!.id, profile.toMap());
       _userProfile = profile;
       _isLoading = false;
@@ -183,13 +228,25 @@ class AuthProvider extends ChangeNotifier {
     String? medications,
     String? fitnessGoals,
   }) async {
-    print(_currentUser);
-    if (_currentUser == null) return false;
+    debugPrint("==============================================");
+    debugPrint("📝 CREATE PROFILE CALLED");
+    debugPrint("Current User: $_currentUser");
+    debugPrint("User ID: ${_currentUser?.id}");
+    debugPrint("Is Authenticated: $_isAuthenticated");
+    debugPrint("==============================================");
+
+    if (_currentUser == null) {
+      debugPrint("❌ CRITICAL: _currentUser is NULL!");
+      _error = 'User session lost. Please log in again.';
+      return false;
+    }
     
     try {
       _isLoading = true;
       _error = null;
       notifyListeners();
+      
+      debugPrint('📝 Creating profile for user: ${_currentUser!.id}');
       
       final profile = UserProfile(
         userId: _currentUser!.id,
@@ -201,16 +258,18 @@ class AuthProvider extends ChangeNotifier {
         allergies: allergies,
         medications: medications,
         fitnessGoals: fitnessGoals,
-        updatedAt: DateTime.now().millisecondsSinceEpoch,
+        updatedAt: DateTime.now(),
       );
       
       await _firestoreService.setUserProfile(_currentUser!.id, profile.toMap());
       
+      debugPrint('✅ Profile created successfully');
       _userProfile = profile;
       _isLoading = false;
       notifyListeners();
       return true;
     } catch (e) {
+      debugPrint('❌ Profile creation failed: $e');
       _error = 'Profile creation failed: $e';
       _isLoading = false;
       notifyListeners();
@@ -304,5 +363,19 @@ class AuthProvider extends ChangeNotifier {
   void clearError() {
     _error = null;
     notifyListeners();
+  }
+  
+  /// Force refresh current user (useful for debugging)
+  Future<void> forceRefreshUser() async {
+    try {
+      debugPrint('🔄 Force refreshing user...');
+      await _authService.refreshCurrentUser();
+      _currentUser = _authService.currentUser;
+      _isAuthenticated = _currentUser != null;
+      debugPrint('Current user after refresh: $_currentUser');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('❌ Force refresh failed: $e');
+    }
   }
 }

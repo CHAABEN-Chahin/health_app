@@ -367,7 +367,7 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
-                        _getSessionIcon(session.sessionType ?? 'other'),
+                        _getSessionIcon(session.sessionType),
                         color: Colors.white,
                         size: 24,
                       ),
@@ -378,7 +378,7 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _formatSessionType(session.sessionType ?? 'Workout'),
+                            _formatSessionType(session.sessionType),
                             style: AppTextStyles.header3.copyWith(fontSize: 18),
                           ),
                           const SizedBox(height: 4),
@@ -488,14 +488,14 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
-                    _getSessionIcon(session.sessionType ?? 'other'),
+                    _getSessionIcon(session.sessionType),
                     color: Colors.white,
                     size: 28,
                   ),
                 ),
                 const SizedBox(width: 16),
                 Text(
-                  _formatSessionType(session.sessionType ?? 'Workout'),
+                  _formatSessionType(session.sessionType),
                   style: AppTextStyles.header2,
                 ),
               ],

@@ -356,7 +356,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Text('Gender', style: AppTextStyles.bodySmall.copyWith(color: AppColors.mediumGray)),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: _selectedGender,
+          initialValue: _selectedGender,
           decoration: InputDecoration(
             filled: true,
             fillColor: AppColors.tertiaryDark,
@@ -400,7 +400,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       allergies: _allergiesController.text.isEmpty ? null : _allergiesController.text,
       medications: _medicationsController.text.isEmpty ? null : _medicationsController.text,
       fitnessGoals: _goalsController.text.isEmpty ? null : _goalsController.text,
-      updatedAt: DateTime.now().millisecondsSinceEpoch,
+      updatedAt: DateTime.now(),
     );
 
     final success = await authProvider.updateProfile(updatedProfile);

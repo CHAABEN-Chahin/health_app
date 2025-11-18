@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:workmanager/workmanager.dart';
 import 'firebase_service.dart';
-import 'database_service.dart';
 
 /// Background sync service that handles periodic data synchronization
 /// Syncs health data to Firebase cloud at scheduled intervals
@@ -12,8 +11,7 @@ class SyncService {
   SyncService._internal();
 
   final FirebaseService _firebaseService = FirebaseService();
-  final DatabaseService _databaseService = DatabaseService();
-  
+
   bool _isInitialized = false;
   Timer? _periodicSyncTimer;
   

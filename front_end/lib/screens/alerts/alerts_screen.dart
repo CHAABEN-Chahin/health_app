@@ -53,7 +53,6 @@ class _AlertsScreenState extends State<AlertsScreen> {
                   ? () async {
                       final alertIds = alertsProvider.unacknowledgedAlerts
                           .map((a) => a.id)
-                          .where((id) => id != null)
                           .cast<String>()
                           .toList();
                       await alertsProvider.acknowledgeMultiple(alertIds);
@@ -264,20 +263,18 @@ class _AlertsScreenState extends State<AlertsScreen> {
         child: const Icon(Icons.delete, color: Colors.white),
       ),
       onDismissed: (direction) {
-        if (alert.id != null) {
-          alertsProvider.deleteAlert(alert.id!);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Alert deleted'),
-              backgroundColor: AppColors.secondaryDark,
-            ),
-          );
-        }
+        alertsProvider.deleteAlert(alert.id);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Alert deleted'),
+            backgroundColor: AppColors.secondaryDark,
+          ),
+        );
       },
       child: GestureDetector(
         onTap: () {
-          if (!alert.isRead && alert.id != null) {
-            alertsProvider.markAsRead(alert.id!);
+          if (!alert.isRead) {
+            alertsProvider.markAsRead(alert.id);
           }
           _showAlertDetails(alert);
         },
@@ -356,7 +353,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              if (alert.vitalType != null && alert.vitalValue != null) ...[
+              if (alert.vitalValue != null) ...[
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -378,27 +375,25 @@ class _AlertsScreenState extends State<AlertsScreen> {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () async {
-                        if (alert.id != null) {
-                          await alertsProvider.acknowledgeAlert(alert.id!);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Row(
-                                  children: [
-                                    Icon(Icons.check_circle, color: AppColors.successGreen, size: 20),
-                                    const SizedBox(width: 8),
-                                    const Text('Alert acknowledged'),
-                                  ],
-                                ),
-                                backgroundColor: AppColors.secondaryDark,
-                                duration: const Duration(seconds: 2),
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
+                        await alertsProvider.acknowledgeAlert(alert.id);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Row(
+                                children: [
+                                  Icon(Icons.check_circle, color: AppColors.successGreen, size: 20),
+                                  SizedBox(width: 8),
+                                  Text('Alert acknowledged'),
+                                ],
                               ),
-                            );
-                          }
+                              backgroundColor: AppColors.secondaryDark,
+                              duration: const Duration(seconds: 2),
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          );
                         }
                       },
                       borderRadius: BorderRadius.circular(12),
@@ -495,7 +490,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
               Text('Description', style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Text(alert.message, style: AppTextStyles.bodyMedium),
-              if (alert.recommendation != null) ...[
+              ...[
                 const SizedBox(height: 16),
                 Text('Recommendation', style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
@@ -506,7 +501,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: AppColors.successGreen.withOpacity(0.3)),
                   ),
-                  child: Text(alert.recommendation!, style: AppTextStyles.bodyMedium),
+                  child: Text(alert.recommendation, style: AppTextStyles.bodyMedium),
                 ),
               ],
               const SizedBox(height: 24),
@@ -535,7 +530,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                 ),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.check_circle, 
                 size: 80, 
                 color: AppColors.successGreen,

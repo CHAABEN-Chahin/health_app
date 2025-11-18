@@ -7,7 +7,7 @@ import '../widgets/common/at_mention_text_field.dart';
 /// Example screen demonstrating the @ mention text field functionality
 /// This can be used for testing and as a reference implementation
 class AtMentionExample extends StatefulWidget {
-  const AtMentionExample({Key? key}) : super(key: key);
+  const AtMentionExample({super.key});
 
   @override
   State<AtMentionExample> createState() => _AtMentionExampleState();
@@ -15,7 +15,6 @@ class AtMentionExample extends StatefulWidget {
 
 class _AtMentionExampleState extends State<AtMentionExample> {
   final TextEditingController _controller = TextEditingController();
-  final List<String> _mentionedUsers = [];
   final List<String> _messages = [];
 
   final List<User> _exampleUsers = [
@@ -24,14 +23,14 @@ class _AtMentionExampleState extends State<AtMentionExample> {
       username: 'john_doe',
       email: 'john@example.com',
       fullName: 'John Doe',
-      createdAt: DateTime.now().millisecondsSinceEpoch,
+      createdAt: DateTime.now(),
     ),
     User(
       id: '2',
       username: 'jane_smith',
       email: 'jane@example.com',
       fullName: 'Jane Smith',
-      createdAt: DateTime.now().millisecondsSinceEpoch,
+      createdAt: DateTime.now(),
     ),
   ];
 

@@ -30,7 +30,6 @@ class VitalCard extends StatefulWidget {
 
 class _VitalCardState extends State<VitalCard> with SingleTickerProviderStateMixin {
   late AnimationController _shimmerController;
-  String? _previousValue;
 
   @override
   void initState() {
@@ -39,7 +38,6 @@ class _VitalCardState extends State<VitalCard> with SingleTickerProviderStateMix
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    _previousValue = widget.value;
   }
 
   @override
@@ -47,7 +45,6 @@ class _VitalCardState extends State<VitalCard> with SingleTickerProviderStateMix
     super.didUpdateWidget(oldWidget);
     if (widget.isLive && oldWidget.value != widget.value) {
       _shimmerController.forward(from: 0.0);
-      _previousValue = widget.value;
     }
   }
 

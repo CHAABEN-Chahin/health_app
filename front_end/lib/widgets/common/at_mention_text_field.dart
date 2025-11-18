@@ -31,7 +31,6 @@ class _AtMentionTextFieldState extends State<AtMentionTextField> {
   final LayerLink _layerLink = LayerLink();
   List<User> _filteredUsers = [];
   String _currentMentionQuery = '';
-  bool _showSuggestions = false;
 
   @override
   void initState() {
@@ -103,7 +102,6 @@ class _AtMentionTextFieldState extends State<AtMentionTextField> {
   void _removeOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
-    _showSuggestions = false;
   }
 
   OverlayEntry _createOverlayEntry() {

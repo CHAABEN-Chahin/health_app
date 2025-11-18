@@ -86,9 +86,10 @@ class AuthService {
         print('   - Username: $username');
         print('   - Full Name: ${fullName ?? username}');
         
-        await _firestoreService.setUserProfile(
+        final CreatedUser = await _firestoreService.setUserProfile(
           _firebaseUser!.uid,
           {
+            'id':_firebaseUser!.uid,
             'username': username,
             'full_name': fullName ?? username,
             'email': _firebaseUser!.email,
@@ -104,6 +105,7 @@ class AuthService {
         
         return AuthResult(
           success: true,
+          user: CreatedUser,
           message: 'Registration successful',
           userId: _currentUserId,
         );

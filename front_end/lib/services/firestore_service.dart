@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
+import '../models/user.dart';
+
 /// Firestore service for direct cloud database operations
 /// Replaces the backend API with direct Firebase Firestore access
 class FirestoreService {
@@ -32,7 +34,7 @@ class FirestoreService {
   }
 
   /// Create or update user profile in Firestore
-  Future<void> setUserProfile(String userId, Map<String, dynamic> profileData) async {
+  Future<User> setUserProfile(String userId, Map<String, dynamic> profileData) async {
     try {
       debugPrint('💾 Saving user profile for: $userId');
       
@@ -46,8 +48,12 @@ class FirestoreService {
         profileData,
         SetOptions(merge: true),
       );
-      
+
       debugPrint('✅ User profile saved successfully');
+      var doc = await _firestore.collection('users').doc(userId).get();
+      final User user = User.fromMap(doc.data()!);
+      return user;
+
     } catch (e) {
       debugPrint('❌ Failed to save user profile: $e');
       rethrow;
