@@ -1,0 +1,79 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Helper function to validate timestamp fields
+    function hasValidTimestamp(data) {
+      return data.keys().hasAny(['created_at', 'updated_at', 'synced_at', 'timestamp']);
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Users can only read and write their own profile
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && 
+                      request.resource.data.keys().hasAny(['username', 'email']);
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+      
+      // Vitals subcollection
+      match /vitals/{vitalDate} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId) && 
+                       request.resource.data.date is string &&
+                       request.resource.data.readings is list &&
+                       request.resource.data.summary is map;
+      }
+      
+      // Activities subcollection
+      match /activities/{activityDate} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId) && 
+                       request.resource.data.date is string &&
+                       request.resource.data.steps is number &&
+                       request.resource.data.distance_km is number;
+      }
+      
+      // Sessions subcollection
+      match /sessions/{sessionId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && 
+                        request.resource.data.keys().hasAny(['start_time', 'session_type']);
+        allow update, delete: if isOwner(userId);
+      }
+      
+      // Alerts subcollection
+      match /alerts/{alertId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && 
+                        request.resource.data.type is string &&
+                        request.resource.data.severity is string;
+        allow update: if isOwner(userId);
+        allow delete: if isOwner(userId);
+      }
+      
+      // Nutrition subcollection
+      match /nutrition/{entryId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && 
+                        request.resource.data.keys().hasAny(['meal_type', 'timestamp']);
+        allow update, delete: if isOwner(userId);
+      }
+    }
+    
+    // Deny access to all other documents
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
