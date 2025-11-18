@@ -78,11 +78,21 @@ class AuthService {
       
       // Step 3: Register with backend API (sends ID token, NOT password)
       try {
+        print('📤 Sending signup request to backend with:');
+        print('   - Firebase UID: ${_firebaseUser!.uid}');
+        print('   - Email: ${_firebaseUser!.email}');
+        print('   - Username: $username');
+        print('   - Full Name: ${fullName ?? username}');
+        print('   - ID Token: ${idToken.substring(0, 50)}...');
+        
         final response = await _apiService.signup(
           firebaseIdToken: idToken,
           username: username,
           fullName: fullName ?? username,
         );
+        
+        print('✅ Backend signup successful!');
+        print('📦 Response: $response');
         
         _currentUserId = _firebaseUser!.uid;
         
@@ -95,8 +105,15 @@ class AuthService {
           userId: _currentUserId,
         );
       } catch (e) {
+        print('❌ Backend signup failed!');
+        print('🔴 Error type: ${e.runtimeType}');
+        print('🔴 Error message: ${e.toString()}');
+        if (e is Exception) {
+          print('🔴 Full error: $e');
+        }
+        
         // Backend registration failed, delete Firebase user
-        await _firebaseUser!.delete();
+        //await _firebaseUser!.delete();
         return AuthResult(
           success: false,
           message: 'Backend registration failed: ${e.toString()}',

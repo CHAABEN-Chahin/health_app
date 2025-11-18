@@ -1,8 +1,16 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:io' show Platform;
 
 class ApiService {
-  static const String baseUrl = 'https://5aeefcb0eff3.ngrok-free.app/api/v1';
+  /// Backend API base URL configuration
+  /// Automatically selects the correct URL based on platform:
+  /// - Android Emulator: http://10.0.2.2:5000/api/v1 (emulator special IP)
+  /// - Physical Android Device: Change to your PC's IP (e.g., http://192.168.x.x:5000/api/v1)
+  /// - iOS Simulator: http://localhost:5000/api/v1
+  /// - iOS Physical Device: Change to your PC's IP
+  static const String baseUrl = 'http://10.0.2.2:5000/api/v1'; // Android Emulator
+  
   final Dio _dio = Dio();
   final _storage = const FlutterSecureStorage();
   
@@ -38,11 +46,20 @@ class ApiService {
     required String fullName,
   }) async {
     try {
+      print('\n🌐 API_SERVICE: Sending POST request to /auth/signup');
+      print('   Base URL: $baseUrl');
+      print('   Endpoint: ${baseUrl}/auth/signup');
+      print('   Data: {firebase_id_token: ${firebaseIdToken.substring(0, 30)}..., username: $username, full_name: $fullName}');
+      
       final response = await _dio.post('/auth/signup', data: {
         'firebase_id_token': firebaseIdToken,
         'username': username,
         'full_name': fullName,
       });
+      
+      print('✅ API_SERVICE: Signup response received!');
+      print('   Status Code: ${response.statusCode}');
+      print('   Response Data: ${response.data}');
       
       final data = response.data;
       await _storage.write(key: 'access_token', value: data['access_token']);
@@ -50,7 +67,17 @@ class ApiService {
       
       return data;
     } on DioException catch (e) {
+      print('❌ API_SERVICE: Signup request failed!');
+      print('   DioException Type: ${e.type}');
+      print('   Status Code: ${e.response?.statusCode}');
+      print('   Message: ${e.message}');
+      print('   Response Data: ${e.response?.data}');
       throw _handleError(e);
+    } catch (e) {
+      print('❌ API_SERVICE: Unexpected error in signup!');
+      print('   Error Type: ${e.runtimeType}');
+      print('   Error: $e');
+      rethrow;
     }
   }
   

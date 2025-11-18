@@ -28,7 +28,7 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -43,6 +43,11 @@ class DatabaseService {
       await db.execute('ALTER TABLE user_profile ADD COLUMN daily_carbs_goal INTEGER DEFAULT 250');
       await db.execute('ALTER TABLE user_profile ADD COLUMN daily_fats_goal INTEGER DEFAULT 70');
       debugPrint('✅ Database upgraded from version $oldVersion to $newVersion');
+    }
+    if (oldVersion < 3) {
+      // Add username column to user_profile table
+      await db.execute('ALTER TABLE user_profile ADD COLUMN username TEXT');
+      debugPrint('✅ Database upgraded to version 3 - Added username to user_profile');
     }
   }
 
@@ -64,6 +69,7 @@ class DatabaseService {
     await db.execute('''
       CREATE TABLE user_profile (
         user_id TEXT PRIMARY KEY,
+        username TEXT,
         age INTEGER,
         gender TEXT,
         weight_kg REAL,
