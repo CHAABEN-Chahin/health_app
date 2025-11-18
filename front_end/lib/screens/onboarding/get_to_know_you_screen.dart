@@ -156,7 +156,7 @@ class _GetToKnowYouScreenState extends State<GetToKnowYouScreen> {
               color: isSelected ? null : AppColors.secondaryDark,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isSelected ? Colors.transparent : AppColors.pinkPrimary.withOpacity(0.3),
+                color: isSelected ? Colors.transparent : AppColors.pinkPrimary.withAlpha(76),
               ),
             ),
             child: Text(level, style: AppTextStyles.bodyMedium),

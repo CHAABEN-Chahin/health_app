@@ -181,7 +181,7 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: AppColors.pinkPrimary.withOpacity(0.3),
+                color: AppColors.pinkPrimary.withAlpha(76),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),

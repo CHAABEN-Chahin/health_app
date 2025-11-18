@@ -172,7 +172,7 @@ class _VitalsDetailScreenState extends State<VitalsDetailScreen> with SingleTick
           color: isSelected ? null : AppColors.secondaryDark,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? Colors.transparent : AppColors.pinkPrimary.withOpacity(0.3),
+            color: isSelected ? Colors.transparent : AppColors.pinkPrimary.withAlpha(76),
           ),
         ),
         child: Text(
@@ -259,7 +259,7 @@ class _VitalsDetailScreenState extends State<VitalsDetailScreen> with SingleTick
             decoration: BoxDecoration(
               color: AppColors.secondaryDark,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: color.withOpacity(0.3)),
+              border: Border.all(color: color.withAlpha(76)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -336,7 +336,7 @@ class _VitalsDetailScreenState extends State<VitalsDetailScreen> with SingleTick
       decoration: BoxDecoration(
         color: AppColors.secondaryDark,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withAlpha(76)),
       ),
       child: Column(
         children: [
@@ -404,19 +404,19 @@ class _VitalsDetailScreenState extends State<VitalsDetailScreen> with SingleTick
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [color.withOpacity(0.2), color.withOpacity(0.05)],
+          colors: [color.withAlpha(48), color.withOpacity(0.05)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withAlpha(76)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withAlpha(48),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, size: 32, color: color),
@@ -444,9 +444,9 @@ class _VitalsDetailScreenState extends State<VitalsDetailScreen> with SingleTick
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.2),
+                    color: statusColor.withAlpha(48),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: statusColor.withOpacity(0.5)),
+                    border: Border.all(color: statusColor.withAlpha(128)),
                   ),
                   child: Text(
                     status,
@@ -502,7 +502,7 @@ class _VitalsDetailScreenState extends State<VitalsDetailScreen> with SingleTick
       decoration: BoxDecoration(
         color: AppColors.secondaryDark,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withAlpha(76)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -548,7 +548,7 @@ class _VitalsDetailScreenState extends State<VitalsDetailScreen> with SingleTick
                           height: 8,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [color, color.withOpacity(0.6)],
+                              colors: [color, color.withAlpha(144)],
                             ),
                             borderRadius: BorderRadius.circular(4),
                           ),
@@ -662,14 +662,14 @@ class _VitalsDetailScreenState extends State<VitalsDetailScreen> with SingleTick
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: zoneColor.withOpacity(0.3), width: 2),
+        border: Border.all(color: zoneColor.withAlpha(76), width: 2),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: zoneColor.withOpacity(0.2),
+              color: zoneColor.withAlpha(48),
               shape: BoxShape.circle,
             ),
             child: Icon(zoneIcon, size: 32, color: zoneColor),
@@ -753,7 +753,7 @@ class _VitalsDetailScreenState extends State<VitalsDetailScreen> with SingleTick
       decoration: BoxDecoration(
         color: AppColors.secondaryDark,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withAlpha(76)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -846,7 +846,7 @@ class _VitalsDetailScreenState extends State<VitalsDetailScreen> with SingleTick
                         width: 24,
                         height: 24,
                         decoration: BoxDecoration(
-                          color: color.withOpacity(0.2),
+                          color: color.withAlpha(48),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Center(
@@ -869,9 +869,9 @@ class _VitalsDetailScreenState extends State<VitalsDetailScreen> with SingleTick
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: color.withOpacity(0.2),
+                      color: color.withAlpha(48),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: color.withOpacity(0.3)),
+                      border: Border.all(color: color.withAlpha(76)),
                     ),
                     child: Text(
                       '${value.toStringAsFixed(vitalType == 'temperature' ? 1 : 0)} $unit',

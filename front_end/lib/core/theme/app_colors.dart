@@ -56,8 +56,8 @@ class AppColors {
   // Chart Gradient
   static LinearGradient chartGradient = LinearGradient(
     colors: [
-      pinkPrimary.withOpacity(0.6),
-      purplePrimary.withOpacity(0.2),
+      pinkPrimary.withAlpha(144),
+      purplePrimary.withAlpha(48),
       Colors.transparent,
     ],
     begin: Alignment.topCenter,

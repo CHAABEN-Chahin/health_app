@@ -13,7 +13,7 @@ class VitalCard extends StatefulWidget {
   final bool isLive;
 
   const VitalCard({
-    Key? key,
+    super.key,
     required this.icon,
     required this.value,
     required this.label,
@@ -22,7 +22,7 @@ class VitalCard extends StatefulWidget {
     this.iconColor,
     this.onTap,
     this.isLive = false,
-  }) : super(key: key);
+  });
 
   @override
   State<VitalCard> createState() => _VitalCardState();
@@ -62,21 +62,21 @@ class _VitalCardState extends State<VitalCard> with SingleTickerProviderStateMix
         animation: _shimmerController,
         builder: (context, child) {
           return Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 16),
             decoration: BoxDecoration(
               gradient: AppColors.cardGradient,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: widget.isLive && _shimmerController.isAnimating
                     ? (widget.iconColor ?? AppColors.pinkPrimary).withOpacity(0.5 + _shimmerController.value * 0.5)
-                    : AppColors.white.withOpacity(0.05),
+                    : AppColors.white.withAlpha(12),
                 width: widget.isLive && _shimmerController.isAnimating ? 2 : 1,
               ),
               boxShadow: [
                 BoxShadow(
                   color: widget.isLive && _shimmerController.isAnimating
                       ? (widget.iconColor ?? AppColors.pinkPrimary).withOpacity(0.3 * _shimmerController.value)
-                      : AppColors.pinkPrimary.withOpacity(0.1),
+                      : AppColors.pinkPrimary.withAlpha(24),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),
@@ -85,7 +85,6 @@ class _VitalCardState extends State<VitalCard> with SingleTickerProviderStateMix
             child: child,
           );
         },
-        child: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -97,8 +96,8 @@ class _VitalCardState extends State<VitalCard> with SingleTickerProviderStateMix
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        (widget.iconColor ?? AppColors.pinkPrimary).withOpacity(0.2),
-                        (widget.iconColor ?? AppColors.purplePrimary).withOpacity(0.1),
+                        (widget.iconColor ?? AppColors.pinkPrimary).withAlpha(48),
+                        (widget.iconColor ?? AppColors.purplePrimary).withAlpha(24),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(12),
@@ -113,8 +112,8 @@ class _VitalCardState extends State<VitalCard> with SingleTickerProviderStateMix
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: widget.trend!.startsWith('+')
-                          ? AppColors.successGreen.withOpacity(0.2)
-                          : AppColors.emergencyRed.withOpacity(0.2),
+                          ? AppColors.successGreen.withAlpha(48)
+                          : AppColors.emergencyRed.withAlpha(48),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -172,7 +171,6 @@ class _VitalCardState extends State<VitalCard> with SingleTickerProviderStateMix
             ),
           ],
         ),
-      ),
       ),
     );
   }

@@ -133,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.pinkPrimary.withOpacity(0.3),
+                    color: AppColors.pinkPrimary.withAlpha(76),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),
@@ -183,10 +183,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.secondaryDark, AppColors.secondaryDark.withOpacity(0.8)],
+          colors: [AppColors.secondaryDark, AppColors.secondaryDark.withAlpha(200)],
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: bmiColor.withOpacity(0.3)),
+        border: Border.all(color: bmiColor.withAlpha(76)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -203,7 +203,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             width: 1,
             height: 60,
-            color: AppColors.mediumGray.withOpacity(0.2),
+            color: AppColors.mediumGray.withAlpha(48),
           ),
           Column(
             children: [
@@ -215,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             width: 1,
             height: 60,
-            color: AppColors.mediumGray.withOpacity(0.2),
+            color: AppColors.mediumGray.withAlpha(48),
           ),
           Column(
             children: [

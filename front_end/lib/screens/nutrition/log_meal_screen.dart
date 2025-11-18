@@ -260,10 +260,10 @@ class _LogMealScreenState extends State<LogMealScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.secondaryDark, AppColors.secondaryDark.withOpacity(0.8)],
+          colors: [AppColors.secondaryDark, AppColors.secondaryDark.withAlpha(200)],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.purplePrimary.withOpacity(0.3)),
+        border: Border.all(color: AppColors.purplePrimary.withAlpha(76)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -302,7 +302,7 @@ class _LogMealScreenState extends State<LogMealScreen> {
       backgroundColor: AppColors.tertiaryDark,
       selectedColor: AppColors.pinkPrimary,
       side: BorderSide(
-        color: isSelected ? AppColors.pinkPrimary : AppColors.mediumGray.withOpacity(0.3),
+        color: isSelected ? AppColors.pinkPrimary : AppColors.mediumGray.withAlpha(76),
       ),
     );
   }
@@ -314,7 +314,7 @@ class _LogMealScreenState extends State<LogMealScreen> {
         color: AppColors.secondaryDark,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.purplePrimary.withOpacity(0.3),
+          color: AppColors.purplePrimary.withAlpha(76),
           width: 2,
         ),
       ),
@@ -339,7 +339,7 @@ class _LogMealScreenState extends State<LogMealScreen> {
                         icon: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.6),
+                            color: Colors.black.withAlpha(144),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(Icons.edit, color: Colors.white, size: 20),
@@ -350,7 +350,7 @@ class _LogMealScreenState extends State<LogMealScreen> {
                         icon: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.6),
+                            color: Colors.black.withAlpha(144),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(Icons.close, color: Colors.white, size: 20),
@@ -379,7 +379,7 @@ class _LogMealScreenState extends State<LogMealScreen> {
                       Icon(
                         Icons.add_photo_alternate,
                         size: 56,
-                        color: AppColors.purplePrimary.withOpacity(0.7),
+                        color: AppColors.purplePrimary.withAlpha(156),
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -478,12 +478,12 @@ class _LogMealScreenState extends State<LogMealScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.successGreen.withOpacity(0.1),
+            AppColors.successGreen.withAlpha(24),
             AppColors.successGreen.withOpacity(0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.successGreen.withOpacity(0.3)),
+        border: Border.all(color: AppColors.successGreen.withAlpha(76)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -588,9 +588,9 @@ class _LogMealScreenState extends State<LogMealScreen> {
         padding: const EdgeInsets.all(12),
         margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withAlpha(24),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withAlpha(76)),
         ),
         child: Column(
           children: [

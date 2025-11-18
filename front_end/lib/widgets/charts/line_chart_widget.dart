@@ -67,7 +67,7 @@ class LineChartWidget extends StatelessWidget {
                 show: true,
                 gradient: LinearGradient(
                   colors: [
-                    color.withOpacity(0.3),
+                    color.withAlpha(76),
                     color.withOpacity(0.0),
                   ],
                   begin: Alignment.topCenter,
@@ -139,7 +139,7 @@ class LineChartWidget extends StatelessWidget {
             horizontalInterval: (calculatedMaxY - calculatedMinY) / 4,
             getDrawingHorizontalLine: (value) {
               return FlLine(
-                color: AppColors.mediumGray.withOpacity(0.1),
+                color: AppColors.mediumGray.withAlpha(24),
                 strokeWidth: 1,
               );
             },

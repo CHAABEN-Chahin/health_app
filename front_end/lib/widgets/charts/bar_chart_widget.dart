@@ -87,7 +87,7 @@ class BarChartWidget extends StatelessWidget {
             horizontalInterval: _calculateMaxY() / 4,
             getDrawingHorizontalLine: (value) {
               return FlLine(
-                color: AppColors.mediumGray.withOpacity(0.1),
+                color: AppColors.mediumGray.withAlpha(24),
                 strokeWidth: 1,
               );
             },
@@ -122,7 +122,7 @@ class BarChartWidget extends StatelessWidget {
           BarChartRodData(
             toY: value,
             gradient: LinearGradient(
-              colors: [color, color.withOpacity(0.5)],
+              colors: [color, color.withAlpha(128)],
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
             ),

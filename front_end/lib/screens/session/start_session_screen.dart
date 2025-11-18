@@ -133,9 +133,9 @@ class _StartSessionScreenState extends State<StartSessionScreen> {
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [AppColors.secondaryDark, AppColors.secondaryDark.withOpacity(0.8)]),
+        gradient: LinearGradient(colors: [AppColors.secondaryDark, AppColors.secondaryDark.withAlpha(200)]),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.pinkPrimary.withOpacity(0.3)),
+        border: Border.all(color: AppColors.pinkPrimary.withAlpha(76)),
       ),
       child: Column(
         children: [
@@ -173,7 +173,7 @@ class _StartSessionScreenState extends State<StartSessionScreen> {
       decoration: BoxDecoration(
         color: AppColors.secondaryDark,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withAlpha(76)),
       ),
       child: Column(
         children: [

@@ -12,13 +12,13 @@ class HealthInfoScreen extends StatefulWidget {
   final String activityLevel;
 
   const HealthInfoScreen({
-    Key? key,
+    super.key,
     required this.age,
     required this.gender,
     required this.weight,
     required this.height,
     required this.activityLevel,
-  }) : super(key: key);
+  });
 
   @override
   State<HealthInfoScreen> createState() => _HealthInfoScreenState();
@@ -103,7 +103,7 @@ class _HealthInfoScreenState extends State<HealthInfoScreen> {
                     });
                   },
                   backgroundColor: AppColors.secondaryDark,
-                  selectedColor: AppColors.pinkPrimary.withOpacity(0.3),
+                  selectedColor: AppColors.pinkPrimary.withAlpha(76),
                   checkmarkColor: AppColors.pinkPrimary,
                   labelStyle: AppTextStyles.bodyMedium,
                 );
@@ -116,7 +116,7 @@ class _HealthInfoScreenState extends State<HealthInfoScreen> {
                 labelText: 'Allergies (optional)',
                 hintText: 'e.g., Penicillin, Peanuts',
                 labelStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.mediumGray),
-                hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.mediumGray.withOpacity(0.5)),
+                hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.mediumGray.withAlpha(128)),
                 filled: true,
                 fillColor: AppColors.tertiaryDark,
                 border: OutlineInputBorder(
@@ -134,7 +134,7 @@ class _HealthInfoScreenState extends State<HealthInfoScreen> {
                 labelText: 'Current Medications (optional)',
                 hintText: 'List any medications you\'re taking',
                 labelStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.mediumGray),
-                hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.mediumGray.withOpacity(0.5)),
+                hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.mediumGray.withAlpha(128)),
                 filled: true,
                 fillColor: AppColors.tertiaryDark,
                 border: OutlineInputBorder(

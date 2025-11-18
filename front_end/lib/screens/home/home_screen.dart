@@ -187,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: AppColors.pinkPrimary.withOpacity(0.5),
+            color: AppColors.pinkPrimary.withAlpha(128),
             blurRadius: 20,
             spreadRadius: 2,
             offset: const Offset(0, 4),
@@ -249,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.pinkPrimary.withOpacity(0.3),
+                  color: AppColors.pinkPrimary.withAlpha(76),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -289,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.emergencyRed.withOpacity(0.5),
+                          color: AppColors.emergencyRed.withAlpha(128),
                           blurRadius: 8,
                           spreadRadius: 1,
                         ),
@@ -333,7 +333,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               children: [
                 CircleAvatar(
                   radius: 35,
-                  backgroundColor: Colors.white.withOpacity(0.2),
+                  backgroundColor: Colors.white.withAlpha(48),
                   child: const Icon(Icons.person, color: Colors.white, size: 40),
                 ),
                 const SizedBox(height: 12),
@@ -389,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       leading: Icon(icon, color: AppColors.pinkPrimary),
       title: Text(title, style: AppTextStyles.bodyMedium),
       onTap: onTap,
-      hoverColor: AppColors.pinkPrimary.withOpacity(0.1),
+      hoverColor: AppColors.pinkPrimary.withAlpha(24),
     );
   }
 
@@ -467,16 +467,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         gradient: LinearGradient(
           colors: [
             AppColors.secondaryDark,
-            AppColors.secondaryDark.withOpacity(0.8),
+            AppColors.secondaryDark.withAlpha(200),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.pinkPrimary.withOpacity(0.3), width: 1),
+        border: Border.all(color: AppColors.pinkPrimary.withAlpha(76), width: 1),
         boxShadow: [
           BoxShadow(
-            color: AppColors.pinkPrimary.withOpacity(0.1),
+            color: AppColors.pinkPrimary.withAlpha(24),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -524,7 +524,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     value: caloriesBurned / calorieGoal,
                     label: 'Calories',
                     centerText: '$caloriesBurned',
-                    size: 100,
+                    size: 90,
                     gradientColors: [AppColors.pinkPrimary, AppColors.purplePrimary],
                   ),
                   const SizedBox(height: 8),
@@ -534,11 +534,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       Icon(
                         Icons.flag_outlined,
                         size: 12,
-                        color: AppColors.mediumGray.withOpacity(0.7),
+                        color: AppColors.mediumGray.withAlpha(156),
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'Goal: $calorieGoal kcal',
+                        '$calorieGoal kcal',
                         style: AppTextStyles.caption.copyWith(
                           color: AppColors.mediumGray,
                           fontSize: 11,
@@ -554,8 +554,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     value: steps / stepGoal,
                     label: 'Steps',
                     centerText: '$steps',
-                    size: 100,
-                    gradientColors: [AppColors.purplePrimary, AppColors.purpleSecondary],
+                    size: 90,
+                    gradientColors: const [AppColors.purplePrimary, AppColors.purpleSecondary],
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -564,11 +564,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       Icon(
                         Icons.flag_outlined,
                         size: 12,
-                        color: AppColors.mediumGray.withOpacity(0.7),
+                        color: AppColors.mediumGray.withAlpha(156),
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'Goal: ${stepGoal.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} steps',
+                        '${stepGoal.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} steps',
                         style: AppTextStyles.caption.copyWith(
                           color: AppColors.mediumGray,
                           fontSize: 11,
@@ -584,7 +584,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     value: distance / distanceGoal,
                     label: 'Distance',
                     centerText: distance < 1.0 ? '${(distance * 1000).toStringAsFixed(0)} m' : '${distance.toStringAsFixed(2)} km',
-                    size: 100,
+                    size: 90,
                     gradientColors: const [AppColors.infoBlue, AppColors.infoBlue],
                   ),
                   const SizedBox(height: 8),
@@ -594,11 +594,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       Icon(
                         Icons.flag_outlined,
                         size: 12,
-                        color: AppColors.mediumGray.withOpacity(0.7),
+                        color: AppColors.mediumGray.withAlpha(156),
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'Goal: ${distanceGoal.toStringAsFixed(1)} km',
+                        '${distanceGoal.toStringAsFixed(1)} km',
                         style: AppTextStyles.caption.copyWith(
                           color: AppColors.mediumGray,
                           fontSize: 11,
@@ -637,7 +637,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: AppColors.successGreen.withOpacity(0.2),
+                              color: AppColors.successGreen.withAlpha(48),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
@@ -645,7 +645,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 Container(
                                   width: 6,
                                   height: 6,
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     color: AppColors.successGreen,
                                     shape: BoxShape.circle,
                                   ),
@@ -670,10 +670,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            color: _getActivityColor(currentVitals.activityState!).withOpacity(0.15),
+                            color: _getActivityColor(currentVitals.activityState!).withAlpha(38),
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: _getActivityColor(currentVitals.activityState!).withOpacity(0.3),
+                              color: _getActivityColor(currentVitals.activityState!).withAlpha(76),
                             ),
                           ),
                           child: Row(
@@ -712,7 +712,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               physics: const NeverScrollableScrollPhysics(),
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
-              childAspectRatio: 1.4,
               children: [
                 VitalCard(
                   icon: '❤️',
@@ -800,10 +799,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       (sum, entry) => sum + (entry.fatsG ?? 0)
     );
 
-    final calorieGoal = 2000;
-    final proteinGoal = 150;
-    final carbsGoal = 200;
-    final fatsGoal = 65;
+    const calorieGoal = 2000;
+    const proteinGoal = 150;
+    const carbsGoal = 200;
+    const fatsGoal = 65;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -811,13 +810,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         gradient: LinearGradient(
           colors: [
             AppColors.secondaryDark,
-            AppColors.secondaryDark.withOpacity(0.8),
+            AppColors.secondaryDark.withAlpha(200),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.purplePrimary.withOpacity(0.3), width: 1),
+        border: Border.all(color: AppColors.purplePrimary.withAlpha(76), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -884,7 +883,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               Container(
                 height: 8,
                 decoration: BoxDecoration(
-                  color: AppColors.tertiaryDark.withOpacity(0.3),
+                  color: AppColors.tertiaryDark.withAlpha(76),
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
