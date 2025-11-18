@@ -486,7 +486,7 @@ class _LogMealScreenState extends State<LogMealScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: AppColors.primaryGradient,
               shape: BoxShape.circle,
             ),
@@ -509,7 +509,7 @@ class _LogMealScreenState extends State<LogMealScreen> {
         gradient: LinearGradient(
           colors: [
             AppColors.successGreen.withAlpha(24),
-            AppColors.successGreen.withOpacity(0.05),
+            AppColors.successGreen.withAlpha(12),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
