@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'api_service.dart';
+import 'firestore_service.dart';
 import 'database_service.dart';
 
 /// Firebase service wrapper that handles cloud sync operations
-/// This service acts as an intermediary between the local database and the backend API
+/// This service acts as an intermediary between the local database and Firestore
 class FirebaseService {
   static final FirebaseService _instance = FirebaseService._internal();
   factory FirebaseService() => _instance;
   FirebaseService._internal();
 
-  final ApiService _apiService = ApiService();
+  final FirestoreService _firestoreService = FirestoreService();
   final DatabaseService _databaseService = DatabaseService();
   
   bool _isSyncing = false;
@@ -20,10 +20,11 @@ class FirebaseService {
   bool get isSyncing => _isSyncing;
   String? get lastError => _lastError;
 
-  /// Initialize Firebase service and check authentication
+  /// Initialize Firebase service
   Future<bool> initialize() async {
     try {
-      return await _apiService.isLoggedIn();
+      // Firebase is always initialized via firebase_core
+      return true;
     } catch (e) {
       debugPrint('FirebaseService initialization error: $e');
       _lastError = e.toString();
@@ -79,8 +80,9 @@ class FirebaseService {
       // Calculate summary statistics
       final summary = _calculateVitalsSummary(vitals);
 
-      // Sync to cloud via API
-      await _apiService.syncDailyVitals(
+      // Sync to cloud via Firestore
+      await _firestoreService.syncDailyVitals(
+        userId: userId,
         date: syncDate,
         readings: readings,
         summary: summary,
@@ -114,8 +116,9 @@ class FirebaseService {
         return true;
       }
 
-      // Sync to cloud via API
-      await _apiService.syncDailyActivity(
+      // Sync to cloud via Firestore
+      await _firestoreService.syncDailyActivity(
+        userId: userId,
         date: syncDate,
         steps: metrics.steps ?? 0,
         distanceKm: metrics.distanceKm ?? 0.0,
@@ -140,7 +143,10 @@ class FirebaseService {
     try {
       debugPrint('📥 Fetching $days days of historical vitals from cloud');
       
-      final historicalData = await _apiService.getHistoricalVitals(days);
+      final historicalData = await _firestoreService.getHistoricalVitals(
+        userId: userId,
+        days: days,
+      );
       
       debugPrint('✅ Fetched ${historicalData.length} days of vitals from cloud');
       return historicalData;
@@ -159,7 +165,10 @@ class FirebaseService {
     try {
       debugPrint('📥 Fetching $days days of historical activity from cloud');
       
-      final historicalData = await _apiService.getHistoricalActivity(days);
+      final historicalData = await _firestoreService.getHistoricalActivity(
+        userId: userId,
+        days: days,
+      );
       
       debugPrint('✅ Fetched ${historicalData.length} days of activity from cloud');
       return historicalData;
@@ -178,7 +187,7 @@ class FirebaseService {
     try {
       debugPrint('🔄 Syncing user profile to cloud');
       
-      await _apiService.updateMyProfile(profileData);
+      await _firestoreService.setUserProfile(userId, profileData);
       
       debugPrint('✅ Successfully synced profile to cloud');
       return true;
@@ -190,11 +199,11 @@ class FirebaseService {
   }
 
   /// Fetch user profile from cloud and cache locally
-  Future<Map<String, dynamic>?> fetchProfileFromCloud() async {
+  Future<Map<String, dynamic>?> fetchProfileFromCloud(String userId) async {
     try {
       debugPrint('📥 Fetching user profile from cloud');
       
-      final profile = await _apiService.getMyProfile();
+      final profile = await _firestoreService.getUserProfile(userId);
       
       debugPrint('✅ Fetched profile from cloud');
       return profile;
@@ -206,11 +215,14 @@ class FirebaseService {
   }
 
   /// Sync alert to cloud
-  Future<String?> syncAlertToCloud(Map<String, dynamic> alertData) async {
+  Future<String?> syncAlertToCloud(String userId, Map<String, dynamic> alertData) async {
     try {
       debugPrint('🔄 Syncing alert to cloud');
       
-      final alertId = await _apiService.createAlert(alertData);
+      final alertId = await _firestoreService.createAlert(
+        userId: userId,
+        alertData: alertData,
+      );
       
       debugPrint('✅ Successfully synced alert to cloud: $alertId');
       return alertId;

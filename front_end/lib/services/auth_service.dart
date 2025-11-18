@@ -2,11 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/user.dart';
 import '../core/constants/constants.dart';
-import 'api_service.dart';
+import 'firestore_service.dart';
 
 class AuthService {
   final firebase.FirebaseAuth _firebaseAuth = firebase.FirebaseAuth.instance;
-  final ApiService _apiService = ApiService();
+  final FirestoreService _firestoreService = FirestoreService();
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   firebase.User? _firebaseUser;
@@ -25,10 +25,12 @@ class AuthService {
       if (_firebaseUser != null) {
         _currentUserId = _firebaseUser!.uid;
         
-        // Try to load user profile from backend
+        // Try to load user profile from Firestore
         try {
-          final profile = await _apiService.getMyProfile();
-          _currentUser = User.fromMap(profile);
+          final profile = await _firestoreService.getUserProfile(_currentUserId!);
+          if (profile != null) {
+            _currentUser = User.fromMap(profile);
+          }
           return true;
         } catch (e) {
           print('Failed to load profile: $e');
@@ -76,23 +78,24 @@ class AuthService {
         );
       }
       
-      // Step 3: Register with backend API (sends ID token, NOT password)
+      // Step 3: Create user profile in Firestore
       try {
-        print('📤 Sending signup request to backend with:');
+        print('📤 Creating user profile in Firestore:');
         print('   - Firebase UID: ${_firebaseUser!.uid}');
         print('   - Email: ${_firebaseUser!.email}');
         print('   - Username: $username');
         print('   - Full Name: ${fullName ?? username}');
-        print('   - ID Token: ${idToken.substring(0, 50)}...');
         
-        final response = await _apiService.signup(
-          firebaseIdToken: idToken,
-          username: username,
-          fullName: fullName ?? username,
+        await _firestoreService.setUserProfile(
+          _firebaseUser!.uid,
+          {
+            'username': username,
+            'full_name': fullName ?? username,
+            'email': _firebaseUser!.email,
+          },
         );
         
-        print('✅ Backend signup successful!');
-        print('📦 Response: $response');
+        print('✅ User profile created in Firestore!');
         
         _currentUserId = _firebaseUser!.uid;
         
@@ -105,18 +108,17 @@ class AuthService {
           userId: _currentUserId,
         );
       } catch (e) {
-        print('❌ Backend signup failed!');
+        print('❌ Firestore profile creation failed!');
         print('🔴 Error type: ${e.runtimeType}');
         print('🔴 Error message: ${e.toString()}');
-        if (e is Exception) {
-          print('🔴 Full error: $e');
-        }
         
-        // Backend registration failed, delete Firebase user
-        //await _firebaseUser!.delete();
+        // Profile creation failed, but Firebase user exists
+        // Let them continue - they can set up profile later
+        _currentUserId = _firebaseUser!.uid;
         return AuthResult(
-          success: false,
-          message: 'Backend registration failed: ${e.toString()}',
+          success: true,
+          message: 'Registration successful (profile setup pending)',
+          userId: _currentUserId,
         );
       }
     } on firebase.FirebaseAuthException catch (e) {
@@ -163,15 +165,15 @@ class AuthService {
         );
       }
       
-      // Step 3: Login to backend (sends ID token, NOT password)
+      // Step 3: Load user profile from Firestore
       try {
-        await _apiService.login(idToken);
-        
         _currentUserId = _firebaseUser!.uid;
         
-        // Load user profile from backend
-        final profile = await _apiService.getMyProfile();
-        _currentUser = User.fromMap(profile);
+        // Load user profile from Firestore
+        final profile = await _firestoreService.getUserProfile(_currentUserId!);
+        if (profile != null) {
+          _currentUser = User.fromMap(profile);
+        }
         
         // Store credentials
         await _secureStorage.write(key: AppConstants.keyUserId, value: _currentUserId);
@@ -186,7 +188,7 @@ class AuthService {
       } catch (e) {
         return AuthResult(
           success: false,
-          message: 'Backend login failed: ${e.toString()}',
+          message: 'Failed to load profile: ${e.toString()}',
         );
       }
     } on firebase.FirebaseAuthException catch (e) {
@@ -202,11 +204,10 @@ class AuthService {
     }
   }
 
-  // Logout user from Firebase + Backend
+  // Logout user from Firebase
   Future<void> logout() async {
     try {
       await _firebaseAuth.signOut();
-      await _apiService.logout();
       await _secureStorage.delete(key: AppConstants.keyUserId);
       await _secureStorage.delete(key: AppConstants.keyUsername);
       await _secureStorage.delete(key: AppConstants.keyAuthToken);
@@ -297,13 +298,15 @@ class AuthService {
     }
   }
 
-  // Refresh current user profile from backend
+  // Refresh current user profile from Firestore
   Future<User?> refreshCurrentUser() async {
     if (_firebaseUser == null) return null;
     
     try {
-      final profile = await _apiService.getMyProfile();
-      _currentUser = User.fromMap(profile);
+      final profile = await _firestoreService.getUserProfile(_firebaseUser!.uid);
+      if (profile != null) {
+        _currentUser = User.fromMap(profile);
+      }
       return _currentUser;
     } catch (e) {
       print('Refresh user error: $e');
