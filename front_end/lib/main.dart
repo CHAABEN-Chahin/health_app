@@ -26,9 +26,21 @@ import 'providers/vitals_provider.dart';
 import 'providers/bluetooth_provider.dart';
 import 'providers/alerts_provider.dart';
 
+import 'dart:io';
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
-  
+  HttpOverrides.global = MyHttpOverrides();
+
   // Initialize Firebase
   try {
     await Firebase.initializeApp();

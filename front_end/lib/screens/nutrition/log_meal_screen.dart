@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,7 @@ import '../../widgets/common/custom_text_field.dart';
 import '../../services/database_service.dart';
 import '../../models/nutrition_entry.dart';
 import '../../providers/auth_provider.dart';
+import 'package:http/http.dart' as http;
 
 class LogMealScreen extends StatefulWidget {
   const LogMealScreen({Key? key}) : super(key: key);
@@ -82,40 +84,68 @@ class _LogMealScreenState extends State<LogMealScreen> {
     setState(() => _isAnalyzing = true);
 
     try {
-      // TODO: Replace with actual API call to your backend
-      // Example:
-      // final response = await http.post(
-      //   Uri.parse('YOUR_API_URL/analyze-meal'),
-      //   body: {
-      //     'image': _selectedImage != null ? base64Image : null,
-      //     'description': _descriptionController.text,
-      //     'meal_type': _selectedMealType,
-      //   },
-      // );
-      // final data = json.decode(response.body);
-      
-      // Simulated AI response (replace with actual API call)
-      await Future.delayed(const Duration(seconds: 2));
-      
-      setState(() {
-        _aiNutritionData = {
-          'calories': 450,
-          'protein_g': 28.5,
-          'carbs_g': 42.0,
-          'fats_g': 16.5,
-          'confidence': 0.85,
-          'analysis': 'Grilled chicken breast with quinoa and steamed vegetables. High protein, moderate carbs, healthy fats.',
-        };
-      });
+      // Prepare multipart request
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://4562ef6ed30f.ngrok-free.app/get_calories'),
+      );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✨ AI analysis complete!'),
-            backgroundColor: AppColors.successGreen,
-            behavior: SnackBarBehavior.floating,
+      // Add image file if available
+      if (_selectedImage != null) {
+        var imageBytes = await _selectedImage!.readAsBytes();
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'file',
+            imageBytes,
+            filename: 'meal_image.jpg',
           ),
         );
+      }
+
+      // Send request
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // Check if food was detected
+        if (data['food_detected'] == false) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(data['message'] ?? 'No food detected in the image'),
+                backgroundColor: AppColors.warningOrange,
+              ),
+            );
+          }
+          return;
+        }
+
+        // Extract nutrition facts
+        final nutritionFacts = data['nutrition_facts'];
+
+        setState(() {
+          _aiNutritionData = {
+            'calories': nutritionFacts['calories'] ?? 0,
+            'protein_g': double.tryParse(nutritionFacts['protein']?.replaceAll('g', '') ?? '0') ?? 0.0,
+            'carbs_g': double.tryParse(nutritionFacts['carbs']?.replaceAll('g', '') ?? '0') ?? 0.0,
+            'fats_g': double.tryParse(nutritionFacts['total_fat']?.replaceAll('g', '') ?? '0') ?? 0.0,
+            'analysis': data['notes'] ?? 'AI analysis complete',
+          };
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✨ AI analysis complete!'),
+              backgroundColor: AppColors.successGreen,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      } else {
+        throw Exception('Server returned ${response.statusCode}: ${response.body}');
       }
     } catch (e) {
       debugPrint('Error analyzing with AI: $e');
@@ -504,10 +534,6 @@ class _LogMealScreenState extends State<LogMealScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('AI Analysis Complete', style: AppTextStyles.header3.copyWith(fontSize: 16)),
-                    Text(
-                      'Confidence: ${(_aiNutritionData!['confidence'] * 100).toStringAsFixed(0)}%',
-                      style: AppTextStyles.caption.copyWith(color: AppColors.successGreen),
-                    ),
                   ],
                 ),
               ),
