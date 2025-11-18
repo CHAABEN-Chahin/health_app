@@ -1,7 +1,7 @@
 from fastapi import FastAPI,File,UploadFile,APIRouter
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware  # Add this
-from ollama_service import analyse_image
+from .ollama_service import analyse_image
 import base64
 import json
 from pathlib import Path

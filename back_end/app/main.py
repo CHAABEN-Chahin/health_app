@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.utils.firebase_admin import initialize_firebase
-from app.api.v1 import auth, users, vitals, activities, alerts, sessions, nutrition
+from app.api.v1 import auth, users, vitals, activities, alerts, sessions, nutrition , vision
 import uvicorn
 
 settings = get_settings()
@@ -34,6 +34,7 @@ app.include_router(activities.router, prefix="/api/v1/activities", tags=["Activi
 app.include_router(alerts.router, prefix="/api/v1/alerts", tags=["Alerts"])
 app.include_router(sessions.router, prefix="/api/v1/sessions", tags=["Sessions"])
 app.include_router(nutrition.router, prefix="/api/v1/nutrition", tags=["Nutrition"])
+app.include_router(vision.router, prefix="/api/v1/vision", tags=["Vision"])
 
 @app.get("/")
 def root():

@@ -1,14 +1,13 @@
 from pydantic import BaseModel
 from typing import List, Optional
-from models.vitals import VitalReading, VitalsSummary, DailyVitals
+from app.models import vitals
 
 class SyncVitalsRequest(BaseModel):
     date: str  # YYYY-MM-DD
-    readings: List[VitalReading]
-    summary: VitalsSummary
-
+    readings: List[vitals.VitalReading]
+    summary: vitals.VitalsSummary
 class GetVitalsResponse(BaseModel):
-    data: List[DailyVitals]
+    data: List[vitals.DailyVitals]
     days: int
     start_date: str
     end_date: str
