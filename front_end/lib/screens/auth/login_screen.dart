@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           gradient: AppColors.primaryGradient,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.pinkPrimary.withOpacity(0.5),
+                              color: AppColors.pinkPrimary.withAlpha(128),
                               blurRadius: 40,
                               spreadRadius: 10,
                             ),

@@ -60,9 +60,9 @@ class _LiveIndicatorState extends State<LiveIndicator> with SingleTickerProvider
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: AppColors.mediumGray.withOpacity(0.2),
+          color: AppColors.mediumGray.withAlpha(48),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.mediumGray.withOpacity(0.3)),
+          border: Border.all(color: AppColors.mediumGray.withAlpha(76)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -93,8 +93,8 @@ class _LiveIndicatorState extends State<LiveIndicator> with SingleTickerProvider
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                AppColors.successGreen.withOpacity(0.2),
-                AppColors.successGreen.withOpacity(0.1),
+                AppColors.successGreen.withAlpha(48),
+                AppColors.successGreen.withAlpha(24),
               ],
             ),
             borderRadius: BorderRadius.circular(16),

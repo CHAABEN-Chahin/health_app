@@ -738,7 +738,7 @@ Widget _buildLineChart(List<VitalSign> data) {
               show: true,
               gradient: LinearGradient(
                 colors: [
-                  AppColors.pinkPrimary.withOpacity(0.3),
+                  AppColors.pinkPrimary.withAlpha(76),
                   Colors.transparent,
                 ],
                 begin: Alignment.topCenter,

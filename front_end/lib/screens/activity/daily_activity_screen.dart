@@ -247,7 +247,7 @@ class _DailyActivityScreenState extends State<DailyActivityScreen> with SingleTi
             color: isSelected ? null : AppColors.secondaryDark,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? Colors.transparent : AppColors.pinkPrimary.withOpacity(0.3),
+              color: isSelected ? Colors.transparent : AppColors.pinkPrimary.withAlpha(76),
             ),
           ),
           child: Text(
@@ -380,12 +380,12 @@ class _DailyActivityScreenState extends State<DailyActivityScreen> with SingleTi
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.secondaryDark, AppColors.secondaryDark.withOpacity(0.8)],
+          colors: [AppColors.secondaryDark, AppColors.secondaryDark.withAlpha(200)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withAlpha(76)),
       ),
       child: Column(
         children: [
@@ -394,7 +394,7 @@ class _DailyActivityScreenState extends State<DailyActivityScreen> with SingleTi
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withAlpha(48),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 28),
@@ -424,7 +424,7 @@ class _DailyActivityScreenState extends State<DailyActivityScreen> with SingleTi
                 label: 'Total',
                 centerText: total,
                 size: 120,
-                gradientColors: [color, color.withOpacity(0.5)],
+                gradientColors: [color, color.withAlpha(128)],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -454,7 +454,7 @@ class _DailyActivityScreenState extends State<DailyActivityScreen> with SingleTi
       decoration: BoxDecoration(
         color: AppColors.secondaryDark,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withAlpha(76)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

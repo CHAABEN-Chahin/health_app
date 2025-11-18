@@ -208,12 +208,12 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: AppColors.secondaryDark,
-              border: Border.all(color: AppColors.pinkPrimary.withOpacity(0.3)),
+              border: Border.all(color: AppColors.pinkPrimary.withAlpha(76)),
             ),
             child: Icon(
               Icons.fitness_center,
               size: 80,
-              color: AppColors.pinkPrimary.withOpacity(0.5),
+              color: AppColors.pinkPrimary.withAlpha(128),
             ),
           ),
           const SizedBox(height: 24),
@@ -307,11 +307,11 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
         gradient: LinearGradient(
           colors: [
             AppColors.secondaryDark,
-            AppColors.secondaryDark.withOpacity(0.8),
+            AppColors.secondaryDark.withAlpha(200),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withAlpha(76)),
       ),
       child: Column(
         children: [
@@ -342,11 +342,11 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
         gradient: LinearGradient(
           colors: [
             AppColors.secondaryDark,
-            AppColors.secondaryDark.withOpacity(0.8),
+            AppColors.secondaryDark.withAlpha(200),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.pinkPrimary.withOpacity(0.2)),
+        border: Border.all(color: AppColors.pinkPrimary.withAlpha(48)),
       ),
       child: Material(
         color: Colors.transparent,
@@ -394,9 +394,9 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: AppColors.successGreen.withOpacity(0.2),
+                        color: AppColors.successGreen.withAlpha(48),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: AppColors.successGreen.withOpacity(0.3)),
+                        border: Border.all(color: AppColors.successGreen.withAlpha(76)),
                       ),
                       child: Text(
                         'Completed',

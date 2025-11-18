@@ -159,7 +159,7 @@ class _SetGoalsScreenState extends State<SetGoalsScreen> {
               color: isSelected ? null : AppColors.secondaryDark,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isSelected ? Colors.transparent : AppColors.pinkPrimary.withOpacity(0.3),
+                color: isSelected ? Colors.transparent : AppColors.pinkPrimary.withAlpha(76),
               ),
             ),
             child: Text(goal, style: AppTextStyles.bodyMedium),
@@ -209,7 +209,7 @@ class _SetGoalsScreenState extends State<SetGoalsScreen> {
                 color: isSelected ? null : AppColors.secondaryDark,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isSelected ? Colors.transparent : AppColors.pinkPrimary.withOpacity(0.3),
+                  color: isSelected ? Colors.transparent : AppColors.pinkPrimary.withAlpha(76),
                 ),
               ),
               child: Text(
@@ -251,9 +251,9 @@ class _SetGoalsScreenState extends State<SetGoalsScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [AppColors.secondaryDark, AppColors.secondaryDark.withOpacity(0.8)]),
+        gradient: LinearGradient(colors: [AppColors.secondaryDark, AppColors.secondaryDark.withAlpha(200)]),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.pinkPrimary.withOpacity(0.3)),
+        border: Border.all(color: AppColors.pinkPrimary.withAlpha(76)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

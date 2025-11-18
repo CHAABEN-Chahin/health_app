@@ -124,7 +124,7 @@ class _AtMentionTextFieldState extends State<AtMentionTextField> {
                 color: AppColors.secondaryDark,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppColors.purplePrimary.withOpacity(0.3),
+                  color: AppColors.purplePrimary.withAlpha(76),
                 ),
               ),
               child: ListView.builder(
@@ -151,7 +151,7 @@ class _AtMentionTextFieldState extends State<AtMentionTextField> {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: AppColors.mediumGray.withOpacity(0.1),
+              color: AppColors.mediumGray.withAlpha(24),
             ),
           ),
         ),

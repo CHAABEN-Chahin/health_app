@@ -182,7 +182,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
           color: isSelected ? chipColor : AppColors.secondaryDark,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? Colors.transparent : chipColor.withOpacity(0.3),
+            color: isSelected ? Colors.transparent : chipColor.withAlpha(76),
           ),
         ),
         child: Text(
@@ -287,7 +287,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                 : AppColors.secondaryDark.withOpacity(0.95),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: alert.isRead ? color.withOpacity(0.3) : color,
+              color: alert.isRead ? color.withAlpha(76) : color,
               width: alert.isRead ? 1 : 2,
             ),
           ),
@@ -299,7 +299,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: color.withOpacity(0.2),
+                      color: color.withAlpha(48),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -358,7 +358,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withAlpha(24),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -402,14 +402,14 @@ class _AlertsScreenState extends State<AlertsScreen> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              color.withOpacity(0.8),
+                              color.withAlpha(200),
                               color,
                             ],
                           ),
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: color.withOpacity(0.3),
+                              color: color.withAlpha(76),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -462,7 +462,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: color.withOpacity(0.2),
+                      color: color.withAlpha(48),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -497,9 +497,9 @@ class _AlertsScreenState extends State<AlertsScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.successGreen.withOpacity(0.1),
+                    color: AppColors.successGreen.withAlpha(24),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.successGreen.withOpacity(0.3)),
+                    border: Border.all(color: AppColors.successGreen.withAlpha(76)),
                   ),
                   child: Text(alert.recommendation, style: AppTextStyles.bodyMedium),
                 ),
@@ -524,8 +524,8 @@ class _AlertsScreenState extends State<AlertsScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.successGreen.withOpacity(0.2),
-                    AppColors.successGreen.withOpacity(0.1),
+                    AppColors.successGreen.withAlpha(48),
+                    AppColors.successGreen.withAlpha(24),
                   ],
                 ),
                 shape: BoxShape.circle,

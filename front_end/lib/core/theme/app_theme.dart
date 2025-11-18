@@ -48,13 +48,13 @@ class AppTheme {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(
-            color: AppColors.white.withOpacity(0.1),
+            color: AppColors.white.withAlpha(24),
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(
-            color: AppColors.white.withOpacity(0.1),
+            color: AppColors.white.withAlpha(24),
           ),
         ),
         focusedBorder: OutlineInputBorder(
@@ -83,7 +83,7 @@ class AppTheme {
           backgroundColor: AppColors.pinkPrimary,
           foregroundColor: AppColors.white,
           elevation: 4,
-          shadowColor: AppColors.pinkPrimary.withOpacity(0.4),
+          shadowColor: AppColors.pinkPrimary.withAlpha(105),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -109,7 +109,7 @@ class AppTheme {
       
       // Divider Theme
       dividerTheme: DividerThemeData(
-        color: AppColors.white.withOpacity(0.1),
+        color: AppColors.white.withAlpha(24),
         thickness: 1,
         space: 1,
       ),
@@ -161,7 +161,7 @@ class AppTheme {
         activeTrackColor: AppColors.pinkPrimary,
         inactiveTrackColor: AppColors.darkGray,
         thumbColor: AppColors.white,
-        overlayColor: AppColors.pinkPrimary.withOpacity(0.2),
+        overlayColor: AppColors.pinkPrimary.withAlpha(48),
         valueIndicatorColor: AppColors.pinkPrimary,
       ),
       

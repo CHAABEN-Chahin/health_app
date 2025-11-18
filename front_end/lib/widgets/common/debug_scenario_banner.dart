@@ -17,7 +17,7 @@ class DebugScenarioBanner extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: _getScenarioColor().withOpacity(0.9),
+          color: _getScenarioColor().withAlpha(224),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(

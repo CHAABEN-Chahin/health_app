@@ -269,7 +269,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     border: message.isUser
                         ? null
                         : Border.all(
-                            color: AppColors.purplePrimary.withOpacity(0.3),
+                            color: AppColors.purplePrimary.withAlpha(76),
                           ),
                   ),
                   child: _buildMessageText(message.text),
@@ -290,7 +290,7 @@ class _ChatScreenState extends State<ChatScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.pinkPrimary.withOpacity(0.2),
+                color: AppColors.pinkPrimary.withAlpha(48),
                 shape: BoxShape.circle,
                 border: Border.all(color: AppColors.pinkPrimary),
               ),
@@ -376,7 +376,7 @@ class _ChatScreenState extends State<ChatScreen> {
         color: AppColors.secondaryDark,
         border: Border(
           top: BorderSide(
-            color: AppColors.mediumGray.withOpacity(0.2),
+            color: AppColors.mediumGray.withAlpha(48),
           ),
         ),
       ),
@@ -396,7 +396,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   color: AppColors.tertiaryDark,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: AppColors.mediumGray.withOpacity(0.3),
+                    color: AppColors.mediumGray.withAlpha(76),
                   ),
                 ),
                 child: AtMentionTextField(
@@ -485,9 +485,9 @@ class _ChatScreenState extends State<ChatScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withAlpha(48),
               shape: BoxShape.circle,
-              border: Border.all(color: color.withOpacity(0.5)),
+              border: Border.all(color: color.withAlpha(128)),
             ),
             child: Icon(icon, color: color, size: 32),
           ),

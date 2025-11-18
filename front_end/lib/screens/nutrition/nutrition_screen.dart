@@ -158,10 +158,10 @@ class _NutritionScreenState extends State<NutritionScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.secondaryDark, AppColors.secondaryDark.withOpacity(0.8)],
+          colors: [AppColors.secondaryDark, AppColors.secondaryDark.withAlpha(200)],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.purplePrimary.withOpacity(0.3)),
+        border: Border.all(color: AppColors.purplePrimary.withAlpha(76)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -222,12 +222,12 @@ class _NutritionScreenState extends State<NutritionScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.pinkPrimary.withOpacity(0.2),
-            AppColors.purplePrimary.withOpacity(0.2),
+            AppColors.pinkPrimary.withAlpha(48),
+            AppColors.purplePrimary.withAlpha(48),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.pinkPrimary.withOpacity(0.3), width: 1),
+        border: Border.all(color: AppColors.pinkPrimary.withAlpha(76), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -310,7 +310,7 @@ class _NutritionScreenState extends State<NutritionScreen> {
               Container(
                 height: 12,
                 decoration: BoxDecoration(
-                  color: AppColors.tertiaryDark.withOpacity(0.3),
+                  color: AppColors.tertiaryDark.withAlpha(76),
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
@@ -319,7 +319,7 @@ class _NutritionScreenState extends State<NutritionScreen> {
                 child: Container(
                   height: 12,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [color, color.withOpacity(0.6)]),
+                    gradient: LinearGradient(colors: [color, color.withAlpha(144)]),
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
@@ -344,9 +344,9 @@ class _NutritionScreenState extends State<NutritionScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.tertiaryDark.withOpacity(0.5),
+        color: AppColors.tertiaryDark.withAlpha(128),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withAlpha(76)),
       ),
       child: Column(
         children: [
@@ -415,7 +415,7 @@ class _NutritionScreenState extends State<NutritionScreen> {
       decoration: BoxDecoration(
         color: AppColors.secondaryDark,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.mediumGray.withOpacity(0.2)),
+        border: Border.all(color: AppColors.mediumGray.withAlpha(48)),
       ),
       child: Column(
         children: [
@@ -485,12 +485,12 @@ class _NutritionScreenState extends State<NutritionScreen> {
             decoration: BoxDecoration(
               color: AppColors.secondaryDark,
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.purplePrimary.withOpacity(0.3), width: 2),
+              border: Border.all(color: AppColors.purplePrimary.withAlpha(76), width: 2),
             ),
             child: Icon(
               Icons.restaurant_menu,
               size: 60,
-              color: AppColors.purplePrimary.withOpacity(0.5),
+              color: AppColors.purplePrimary.withAlpha(128),
             ),
           ),
           const SizedBox(height: 24),
@@ -564,7 +564,7 @@ class _NutritionScreenState extends State<NutritionScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.tertiaryDark.withOpacity(0.5),
+                color: AppColors.tertiaryDark.withAlpha(128),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
