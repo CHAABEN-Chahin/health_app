@@ -5,6 +5,8 @@ from app.utils.firebase_admin import initialize_firebase
 from app.api.v1 import auth, users, vitals, activities, alerts, sessions, nutrition , vision
 import uvicorn
 
+from app.api.v1 import chatbot
+
 settings = get_settings()
 
 # Initialize Firebase
@@ -35,6 +37,8 @@ app.include_router(alerts.router, prefix="/api/v1/alerts", tags=["Alerts"])
 app.include_router(sessions.router, prefix="/api/v1/sessions", tags=["Sessions"])
 app.include_router(nutrition.router, prefix="/api/v1/nutrition", tags=["Nutrition"])
 app.include_router(vision.router, prefix="/api/v1/vision", tags=["Vision"])
+app.include_router(chatbot.router, prefix="/api/v1", tags=["Chatbot"])
+
 
 @app.get("/")
 def root():
