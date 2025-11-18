@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" alt="Wellvia Logo" width="400"/>
+  <img src="logo.png" alt="Wellvia Logo" width="400"/>
 </p>
 
 <h1 align="center">Wellvia: Your GenAI-Powered Health & Nutrition Companion</h1>
@@ -49,14 +49,14 @@ Wellvia is built on a modern, decoupled architecture that ensures scalability, s
 Our vision for Wellvia includes a sleek, minimalist wearable designed to continuously monitor user vitals.
 
 <p align="center">
-  <img src="assets/watch_prototype.png" alt="Watch Prototype" width="500"/>
+  <img src="watch_prototype.png" alt="Watch Prototype" width="500"/>
 </p>
 
 #### Hardware Circuit Diagram
 The underlying hardware is based on the powerful and efficient ESP32 microcontroller, integrated with sensors for health monitoring.
 
 <p align="center">
-  <img src="assets/circuit_diagram.png" alt="Circuit Diagram" width="600"/>
+  <img src="circuit_diagram.png" alt="Circuit Diagram" width="600"/>
 </p>
 
 ## Repository Structure
