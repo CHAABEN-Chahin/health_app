@@ -1,7 +1,18 @@
+// ⚠️ DEPRECATED - This service is no longer used
+// The app now uses Firebase Firestore directly via firestore_service.dart
+// 
+// Migration completed: All API endpoints have been replaced with Firestore operations
+// - Authentication: Firebase Auth (auth_service.dart)
+// - User profiles: Firestore users collection (firestore_service.dart)
+// - Health data: Firestore subcollections (vitals, activities, etc.)
+// 
+// This file is kept for reference only and will be removed in a future update.
+
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:io' show Platform;
 
+@deprecated
 class ApiService {
   /// Backend API base URL configuration
   /// Automatically selects the correct URL based on platform:

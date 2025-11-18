@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
-import '../services/api_service.dart';
+import '../services/firestore_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
-  final ApiService _apiService = ApiService();
+  final FirestoreService _firestoreService = FirestoreService();
   
   User? _currentUser;
   UserProfile? _userProfile;
@@ -137,11 +137,14 @@ class AuthProvider extends ChangeNotifier {
     }
   }
   
-  /// Load user profile from API
+  /// Load user profile from Firestore
   Future<void> _loadUserProfile() async {
     try {
-      final profile = await _apiService.getMyProfile();
-      _userProfile = UserProfile.fromMap(profile);
+      if (_currentUser?.id == null) return;
+      final profile = await _firestoreService.getUserProfile(_currentUser!.id);
+      if (profile != null) {
+        _userProfile = UserProfile.fromMap(profile);
+      }
     } catch (e) {
       debugPrint('Failed to load profile: $e');
       rethrow;
@@ -155,7 +158,8 @@ class AuthProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
       
-      await _apiService.updateMyProfile(profile.toMap());
+      if (_currentUser?.id == null) return false;
+      await _firestoreService.setUserProfile(_currentUser!.id, profile.toMap());
       _userProfile = profile;
       _isLoading = false;
       notifyListeners();
@@ -200,7 +204,7 @@ class AuthProvider extends ChangeNotifier {
         updatedAt: DateTime.now().millisecondsSinceEpoch,
       );
       
-      await _apiService.updateMyProfile(profile.toMap());
+      await _firestoreService.setUserProfile(_currentUser!.id, profile.toMap());
       
       _userProfile = profile;
       _isLoading = false;
